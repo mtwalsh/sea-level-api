@@ -10,7 +10,13 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+import sys
+from os.path import abspath, dirname, join as pjoin
+
+BASE_DIR = abspath(pjoin(dirname(__file__), '..'))
+
+sys.path.append(pjoin(BASE_DIR, 'apps'))
+sys.path.append(pjoin(BASE_DIR, 'libs'))
 
 
 # Quick-start development settings - unsuitable for production
