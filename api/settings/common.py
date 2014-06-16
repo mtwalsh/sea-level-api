@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'api.apps.predictions',
+    'api.apps.locations',
 )
 
 MIDDLEWARE_CLASSES = (
