@@ -14,3 +14,5 @@ class Location(models.Model):
         max_length=100,
         unique=True,
         validators=[STRICT_SLUG_VALIDATOR])
+
+    name = models.CharField(max_length=100, blank=False, default="")
