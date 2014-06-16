@@ -1,0 +1,56 @@
+[
+{
+    "fields": {
+        "tide_level": 10.3,
+        "location": 1,
+        "datetime": "2014-06-17T09:00:00Z"
+    },
+    "model": "predictions.prediction",
+    "pk": 1
+},
+{
+    "fields": {
+        "tide_level": 10.8,
+        "location": 1,
+        "datetime": "2014-06-17T09:01:00Z"
+    },
+    "model": "predictions.prediction",
+    "pk": 2
+},
+{
+    "fields": {
+        "tide_level": 10.9,
+        "location": 1,
+        "datetime": "2014-06-17T09:02:00Z"
+    },
+    "model": "predictions.prediction",
+    "pk": 3
+},
+{
+    "fields": {
+        "tide_level": 4.0,
+        "location": 2,
+        "datetime": "2014-06-17T09:00:00Z"
+    },
+    "model": "predictions.prediction",
+    "pk": 4
+},
+{
+    "fields": {
+        "tide_level": 4.3,
+        "location": 2,
+        "datetime": "2014-06-17T09:01:00Z"
+    },
+    "model": "predictions.prediction",
+    "pk": 5
+},
+{
+    "fields": {
+        "tide_level": 4.1,
+        "location": 2,
+        "datetime": "2014-06-17T09:02:00Z"
+    },
+    "model": "predictions.prediction",
+    "pk": 6
+}
+]

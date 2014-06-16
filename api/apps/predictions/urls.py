@@ -1,9 +1,14 @@
-from django.conf.urls import url
+from django.conf.urls import patterns, url
 
-from .views.predictions import predictions_view, predictions_redirect_now
+from views import TideLevels
 
+SLUG_REGEX = '[a-z0-9-]+'
+DATETIME_REGEX = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z'
 
-urlpatterns = [
-    url(r'now', predictions_redirect_now),
-    url(r'', predictions_view),
-]
+urlpatterns = patterns(
+    '',
+
+    url(r'^tide-levels/(?P<location_slug>' + SLUG_REGEX + ')/$',
+        TideLevels.as_view(),
+        name='tide-levels'),
+)

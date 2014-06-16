@@ -47,64 +47,31 @@ See:
 
 
 
-## Tide Prediction
+## Tide Level Prediction
 
-### Get one tide prediction for 2014-06-03 15:47:00 at Liverpool Gladstone
+### Get a single tide predictions for 2014-06-03 15:47:00 UTC at Liverpool Gladstone
 
-`/v0.1/predictions/liverpool-gladstone/2014-06-03T15:47:00Z`
+`/predictions/tide-levels/liverpool-gladstone/?start=2014-06-03T15:47:00Z&end=2014-06-03T15:48:00Z`
 
 ```json
 {
-  "predictions": [{
+  "tide_levels": [{
     "datetime": "2014-06-03T15:47:00Z",
-    "sea_level_height": {
-      "value":  10.90,
-      "unit": "metres",
-    },
-    "tide_height": {
-      "value":  10.37,
-      "unit": "metres",
-    },
-    "surge_height": {
-      "value":  0.53,
-      "unit": "metres",
-    },
+    "tide_level": 10.37,
   }],
-  "linked": {
-    "locations": [{
-      "id": "liverpool-gladstone",
-      "timezone": "Europe/London",
-      "name": "Gladstone Dock, Liverpool",
-      "latitude": 53.00,
-      "longitude": -3.00
-    }]
-  },
 }
 ```
 
-### Get an hourly range of tide predictions
-
-`/v0.1/predictions/liverpool-gladstone?start=2014-06-03T15:47:00Z&end=2014-06-03T16:47:00Z`
-
-### Get the current tide prediction at Liverpool Gladstone (redirect)
-
-`/v0.1/predictions/liverpool-gladstone/now` ==> eg `/v0.1/predictions/liverpool-gladstone/2014-06-03T15:47:00Z`
-
-### Get the next hour of tide predictions at Liverpool Gladstone (redirect)
-
-`/v0.1/predictions/liverpool-gladstone` ==> eg `/v0.1/predictions/liverpool-gladstone?start=2014-06-03T15:47:00Z&end=2014-06-03T16:47:00Z`
-
-
-## Sea Level Time Window
+## Tide Time Window [in progress]
 
 ### Get time windows between 2014-06-01 and 2014-06-02 where the height will be above 10.7 metres
 
-`/v0.1/time-windows/liverpool-gladstone?start=2014-06-01T18:00:00Z&end=2014-06-02T18:00:00Z&height=10.7`
+`/predictions/tide-time-windows/liverpool-gladstone?start=2014-06-01T18:00:00Z&end=2014-06-02T18:00:00Z&height=10.7`
 
 ```json
 
 {
-  "time_windows": [{
+  "tide-time_windows": [{
     "start": {
       "datetime": "2014-06-03T18:00:00Z",
       },
@@ -129,4 +96,4 @@ See:
 
 ### Get the next time window where the height will be above 10.7 metres (redirect)
 
-`/v0.1/time-windows/liverpool-gladstone/next?height=10.7` => `/v0.1/time-windows/liverpool-gladstone?start=2014-06-01T18:00:00Z&end=2014-06-02T18:00:00Z&height=10.7`
+`/time-windows/liverpool-gladstone/next?height=10.7` => `/time-windows/liverpool-gladstone?start=2014-06-01T18:00:00Z&end=2014-06-02T18:00:00Z&height=10.7`

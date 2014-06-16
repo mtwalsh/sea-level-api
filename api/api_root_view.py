@@ -9,4 +9,8 @@ class ApiRoot(generics.GenericAPIView):
             'locations': reverse('location-list',
                                  request=request,
                                  format=format),
+
+            'predictions': reverse('prediction-list',
+                                 request=request,
+                                 format=format),
         })
