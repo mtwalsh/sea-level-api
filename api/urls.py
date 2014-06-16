@@ -8,5 +8,5 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^predictions/', include('api.apps.tidepredict.urls')),
+    url(r'^predictions/', include('api.apps.predictions.urls')),
 ]

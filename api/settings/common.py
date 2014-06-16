@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'api.apps.tidepredict',
+    'api.apps.predictions',
 )
 
 MIDDLEWARE_CLASSES = (
