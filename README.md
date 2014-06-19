@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/sealevelresearch/sea-level-api.svg)](https://travis-ci.org/sealevelresearch/sea-level-api)
 
 See:
 - http://jsonapi.org/format/
