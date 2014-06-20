@@ -1,1 +1,1 @@
-from .tide_prediction import *
+from .prediction_admin import PredictionAdmin

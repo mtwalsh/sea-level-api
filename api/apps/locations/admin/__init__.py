@@ -1,1 +1,1 @@
-from .location import *
+from .location_admin import LocationAdmin
