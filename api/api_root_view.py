@@ -11,6 +11,6 @@ class ApiRoot(generics.GenericAPIView):
                                  format=format),
 
             'predictions': reverse('prediction-list',
-                                 request=request,
-                                 format=format),
+                                   request=request,
+                                   format=format),
         })

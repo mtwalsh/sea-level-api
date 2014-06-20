@@ -163,11 +163,12 @@ class TestTideLevelsViewOrderingResults(TestCase):
         )
         data = json.loads(response.content)
         datetimes = [t['datetime'] for t in data['tide_levels']]
-        assert_equal([
-            '2014-06-01T10:30:00Z',
-            '2014-06-01T10:31:00Z',
-            '2014-06-01T10:32:00Z',
-            '2014-06-01T10:33:00Z',
-            '2014-06-01T10:34:00Z'
+        assert_equal(
+            [
+                '2014-06-01T10:30:00Z',
+                '2014-06-01T10:31:00Z',
+                '2014-06-01T10:32:00Z',
+                '2014-06-01T10:33:00Z',
+                '2014-06-01T10:34:00Z'
             ],
             datetimes)

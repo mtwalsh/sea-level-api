@@ -1,1 +1,1 @@
-from .location import *
+from .location_serializer import LocationSerializer
