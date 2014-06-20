@@ -1,5 +1,6 @@
 from rest_framework.renderers import JSONRenderer
-from .renderer import JSONEnvelopeRenderer
+
+from .json_envelope_renderer import JSONEnvelopeRenderer
 
 
 def replace_json_renderer(renderer_classes):
