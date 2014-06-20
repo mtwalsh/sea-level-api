@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# encoding: utf8
 from __future__ import unicode_literals
 
 from django.db import models, migrations
@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('locations', '__first__'),
+        ('locations', '0001_initial'),
     ]
 
     operations = [
@@ -16,15 +16,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('datetime', models.DateTimeField()),
-                ('tide_height', models.DecimalField(help_text='The predicted height in metres of the tidal component of the sea level.', max_digits=4, decimal_places=2)),
                 ('location', models.ForeignKey(to='locations.Location', to_field='id')),
+                ('tide_level', models.FloatField(help_text='The predicted height in metres of the tidal component of the sea level above a known datum.')),
             ],
             options={
+                'unique_together': set([('location', 'datetime')]),
             },
             bases=(models.Model,),
-        ),
-        migrations.AlterUniqueTogether(
-            name='prediction',
-            unique_together=set([('location', 'datetime')]),
         ),
     ]
