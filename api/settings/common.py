@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 import os
 import sys
 from os.path import abspath, dirname, join as pjoin
+from urlparse import urlparse
+
 
 BASE_DIR = abspath(pjoin(dirname(__file__), '..'))
 
@@ -67,12 +69,22 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# eg postgres://user3123:pass123@database.foo.com:6212/db982398
+
+if 'DATABASE_URL' in os.environ:
+    DATABASE_URL = urlparse(os.environ['DATABASE_URL'])
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': DATABASE_URL.path[1:],
+            'USER': DATABASE_URL.username,
+            'PASSWORD': DATABASE_URL.password,
+            'HOST': DATABASE_URL.hostname,
+            'PORT': DATABASE_URL.port,
+        }
     }
-}
+else:
+    DATABASES = None
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
