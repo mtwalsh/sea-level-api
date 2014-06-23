@@ -1,10 +1,13 @@
 from rest_framework import renderers
+from rest_framework.status import HTTP_200_OK
 
 
 class JSONEnvelopeRenderer(renderers.JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
 
-        data = JSONEnvelopeRenderer.wrap_data(data, renderer_context)
+        if (renderer_context is not None
+                and renderer_context['response'].status_code == HTTP_200_OK):
+            data = JSONEnvelopeRenderer.wrap_data(data, renderer_context)
 
         return super(JSONEnvelopeRenderer, self) \
             .render(data, accepted_media_type, renderer_context)
