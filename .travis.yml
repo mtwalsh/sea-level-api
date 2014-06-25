@@ -18,6 +18,8 @@ install:
   -  pip install -r requirements_for_travis.txt
 before_script:
   - psql -c 'create database stagecraft;' -U postgres
+after_success:
+  - ./.travis_scripts/push_release_tag.sh
 script:
   - ./run_tests.sh
 notifications:
