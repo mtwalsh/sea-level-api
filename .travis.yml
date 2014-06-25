@@ -9,7 +9,7 @@ env:
     - DJANGO_SETTINGS_MODULE=api.settings.production DATABASE_URL=postgres://postgres:@localhost:5432/stagecraft
   global:
     # Contains GH_TOKEN=<secret token> for release tagging
-    secure: "Vb04vYzCM9PU/TWJ5Hi+kd1/txtRylAdYbfLpjwVsHhnMLXrJIHrMwx6vVHg24aZM64ODufvoQyVLlp3FBGNqgSycZBM3jDxtqqUhQEe39dAvQnPjjR3QH+fjoAUaEpmUKLl/Zp6noUsIBjgry/Mviq9HkTR4UhjxZz+Xks+lx4="
+    secure: "d56JXdlDxjZws8+dvvZ/RV/m7wr8+CdFPOabRFWzzo2sV7CsBjlc7vuCT1OAWbGMmt0Q9jQvjt3axHxI5/fbmEetBy4vlnIq5apPCrpNMZRo+iMt+GlMxmueq+RdrTyClH/T/790E6egsIoP6HUHHf6tlAhiNRKm7PUhQoNUbx4="
 matrix:
   fast_finish: true
   allow_failures:
