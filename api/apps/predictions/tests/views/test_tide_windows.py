@@ -20,7 +20,7 @@ class TestTideWindowsView(TestCase):
 
     def test_that_tide_windows_url_lists_available_locations(self):
         raise SkipTest("Not yet implemented.")
-        self.client.get('/predictions/tide-windows/')
+        self.client.get('/1/predictions/tide-windows/')
 
     def test_that_invalid_location_gives_a_json_404(self):
         raise SkipTest("Not yet implemented.")
@@ -30,7 +30,7 @@ class TestTideWindowsView(TestCase):
 
     def test_that_missing_tide_level_param_gives_400_error(self):
         response = self.client.get(
-            '/predictions/tide-windows/liverpool/'
+            '/1/predictions/tide-windows/liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = json.loads(response.content)
@@ -41,7 +41,7 @@ class TestTideWindowsView(TestCase):
 
     def test_that_envelope_has_tide_windows_field(self):
         response = self.client.get(
-            '/predictions/tide-windows/liverpool/'
+            '/1/predictions/tide-windows/liverpool/'
             '?start=2014-06-17T00:00:00Z'
             '&end=2014-06-18T00:00:00Z'
             '&tide_level=10.7')
@@ -50,7 +50,7 @@ class TestTideWindowsView(TestCase):
 
     def test_that_tide_window_records_have_correct_structure(self):
         response = self.client.get(
-            '/predictions/tide-windows/liverpool/'
+            '/1/predictions/tide-windows/liverpool/'
             '?start=2014-06-17T00:00:00Z'
             '&end=2014-06-18T00:00:00Z'
             '&tide_level=10.7')
@@ -115,7 +115,7 @@ class TestTideWindowsCalculationsView(TestCase):
 
     def test_that_single_window_is_correctly_identified(self):
         response = self.client.get(
-            '/predictions/tide-windows/liverpool/'
+            '/1/predictions/tide-windows/liverpool/'
             '?start=2014-06-01T10:00:00Z'
             '&end=2014-06-02T11:00:00Z'
             '&tide_level=5.5'
@@ -140,7 +140,7 @@ class TestTideWindowsCalculationsView(TestCase):
 
     def test_that_double_window_is_correctly_identified(self):
         response = self.client.get(
-            '/predictions/tide-windows/liverpool/'
+            '/1/predictions/tide-windows/liverpool/'
             '?start=2014-06-01T10:00:00Z'
             '&end=2014-06-02T11:00:00Z'
             '&tide_level=5.1'
@@ -179,7 +179,7 @@ class TestTideWindowsCalculationsView(TestCase):
 
     def test_that_no_tidal_window_returned_if_tide_is_never_above_height(self):
         response = self.client.get(
-            '/predictions/tide-windows/liverpool/'
+            '/1/predictions/tide-windows/liverpool/'
             '?start=2014-06-01T10:00:00Z'
             '&end=2014-06-02T11:00:00Z'
             '&tide_level=6.1'
