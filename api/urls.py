@@ -12,6 +12,6 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^locations/', include('api.apps.locations.urls')),
-    url(r'^predictions/', include('api.apps.predictions.urls')),
+    url(r'^1/locations/', include('api.apps.locations.urls')),
+    url(r'^1/predictions/', include('api.apps.predictions.urls')),
 ]
