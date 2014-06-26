@@ -1,6 +1,36 @@
 [![Build Status](https://travis-ci.org/sealevelresearch/sea-level-api.svg)](https://travis-ci.org/sealevelresearch/sea-level-api)
 
+# Configuring a new Heroku app
+
+After setting up a new app, you need to configure a number of environment
+variables through the herkou command line, for example:
+
+```
+APP_NAME="sea-level-api-staging"
+DOMAIN="api-staging.sealevelresearch.com"
+
+# DJANGO_SETTINGS_MODULE
+heroku config:set DJANGO_SETTINGS_MODULE=api.settings.production --app ${APP_NAME}
+
+# DATABASE
+heroku addons:add heroku-postgresql:dev --app ${APP_NAME}
+heroku pg:promote <name of database ie HEROKU_POSTGRESQL_ROSE_URL> --app ${APP_NAME}
+heroku addons:add pgbackups --app ${APP_NAME}
+
+# SECRET_KEY
+heroku config:set SECRET_KEY=$(openssl rand -base64 64) --app ${APP_NAME}
+
+# DOMAINS
+heroku domains:add ${DOMAIN} --app ${APP_NAME}
+
+# WORKERS (after first deploy)
+heroku ps:scale web=1 --app ${APP_NAME}
+```
+
+# Sea Level API
+
 See:
+
 - http://jsonapi.org/format/
 - http://blog.2partsmagic.com/restful-uri-design/
 
