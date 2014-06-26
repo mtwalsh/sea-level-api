@@ -1,8 +1,15 @@
 """
-Django settings for api project.
+Django settings for sea-level api, common to all environments.
+
+The policy here is that if a setting is truly environment-specific, such
+as DEBUG, we should set it to the most secure option here, and let other
+environments override. Sometimes the most secure is not to include it,
+like SECRET_KEY
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
+
+https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
@@ -20,19 +27,17 @@ BASE_DIR = abspath(pjoin(dirname(__file__), '..'))
 sys.path.append(pjoin(BASE_DIR, 'apps'))
 sys.path.append(pjoin(BASE_DIR, 'libs'))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5o1n)9)*abavejeks%3!n-y)i-^a+b3rw2t1htk6-21g3(f1ay'
+SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = TEMPLATE_DEBUG = False
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'api.sealevelresearch.com',
+    'api-staging.sealevelresearch.com',
+    'sea-level-api.herokuapp.com',
+    'sea-level-api-staging.herkouapp.com',
+]
 
 
 # Application definition
