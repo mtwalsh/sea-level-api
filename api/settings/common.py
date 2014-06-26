@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
     'api.sealevelresearch.com',
     'api-staging.sealevelresearch.com',
     'sea-level-api.herokuapp.com',
-    'sea-level-api-staging.herkouapp.com',
+    'sea-level-api-staging.herokuapp.com',
 ]
 
 
