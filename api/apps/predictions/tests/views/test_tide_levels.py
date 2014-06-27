@@ -1,9 +1,11 @@
 from django.test import TestCase
 from nose.tools import assert_equal, assert_in, assert_not_in
-from nose.plugins.skip import SkipTest
 
 from api.apps.predictions.models import Prediction
 from api.apps.locations.models import Location
+
+from .test_location_parsing import LocationParsingTestMixin
+from .test_time_parsing import TimeParsingTestMixin
 
 import datetime
 import json
@@ -15,33 +17,12 @@ class TestTideLevelsViewBase(TestCase):
     PATH = '/1/predictions/tide-levels/'
 
 
-class TestTideLevelsView(TestTideLevelsViewBase):
+class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
+                         TimeParsingTestMixin):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
-
-    def test_that_tide_levels_url_lists_available_locations(self):
-        raise SkipTest("Not yet implemented.")
-        response = self.client.get(self.PATH + '')
-        data = json.loads(response.content)
-        assert_equal([], data['tide_levels'])
-
-        expected_linked = {
-            'locations': [
-                self.PATH + 'liverpool/',
-                self.PATH + 'southampton/',
-            ]
-        }
-        assert_equal(expected_linked, data['linked'])
-
-    def test_that_invalid_location_gives_a_json_404(self):
-        raise SkipTest("Not yet implemented.")
-
-    def test_that_no_start_and_end_parameter_temporary_redirects_to_now(self):
-        raise SkipTest("Not yet implemented.")
-        response = self.client.get(self.PATH + 'liverpool/')
-        assert_equal(302, response.status_code)
 
     def test_that_envelope_has_tide_levels_field(self):
         response = self.client.get(self.PATH + 'liverpool/')

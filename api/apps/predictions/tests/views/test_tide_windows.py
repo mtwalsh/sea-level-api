@@ -6,31 +6,24 @@ import pytz
 from django.test import TestCase
 
 from nose.tools import assert_equal, assert_in
-from nose.plugins.skip import SkipTest
 
 from api.apps.predictions.models import Prediction
 from api.apps.locations.models import Location
+
+from .test_location_parsing import LocationParsingTestMixin
+from .test_time_parsing import TimeParsingTestMixin
 
 
 class TestTideWindowsViewBase(TestCase):
     PATH = '/1/predictions/tide-windows/'
 
 
-class TestTideWindowsView(TestTideWindowsViewBase):
+class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
+                          TimeParsingTestMixin):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
-
-    def test_that_tide_windows_url_lists_available_locations(self):
-        raise SkipTest("Not yet implemented.")
-        self.client.get(self.PATH)
-
-    def test_that_invalid_location_gives_a_json_404(self):
-        raise SkipTest("Not yet implemented.")
-
-    def test_that_no_start_and_end_parameter_temporary_redirects_to_now(self):
-        raise SkipTest("Not yet implemented.")
 
     def test_that_missing_tide_level_param_gives_400_error(self):
         response = self.client.get(
