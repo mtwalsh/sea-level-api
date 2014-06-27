@@ -7,8 +7,12 @@ from urllib import urlencode
 
 import pytz
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from api.apps.locations.models import Location
 from ..models import Prediction
+
+from .exceptions import InvalidLocationError
 
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -20,7 +24,12 @@ class NoStartTimeGivenError(Exception):
 
 
 def get_prediction_queryset(location_slug, start_param, end_param):
-    location = Location.objects.get(slug=location_slug)  # TODO: catch 404
+    try:
+        location = Location.objects.get(slug=location_slug)
+    except ObjectDoesNotExist:
+        raise InvalidLocationError(
+            'Invalid location: "{}". See locations endpoint.'.format(
+                location_slug))
 
     try:
         time_range = parse_time_range(start_param, end_param)
