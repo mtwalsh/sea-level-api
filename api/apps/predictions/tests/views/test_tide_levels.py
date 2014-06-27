@@ -11,7 +11,11 @@ import json
 import pytz
 
 
-class TestTideLevelsView(TestCase):
+class TestTideLevelsViewBase(TestCase):
+    PATH = '/1/predictions/tide-levels/'
+
+
+class TestTideLevelsView(TestTideLevelsViewBase):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
         'api/apps/predictions/fixtures/predictions_two_locations.json',
@@ -19,14 +23,14 @@ class TestTideLevelsView(TestCase):
 
     def test_that_tide_levels_url_lists_available_locations(self):
         raise SkipTest("Not yet implemented.")
-        response = self.client.get('/1/predictions/tide-levels/')
+        response = self.client.get(self.PATH + '')
         data = json.loads(response.content)
         assert_equal([], data['tide_levels'])
 
         expected_linked = {
             'locations': [
-                '/1/predictions/tide-levels/liverpool/',
-                '/1/predictions/tide-levels/southampton/',
+                self.PATH + 'liverpool/',
+                self.PATH + 'southampton/',
             ]
         }
         assert_equal(expected_linked, data['linked'])
@@ -36,17 +40,17 @@ class TestTideLevelsView(TestCase):
 
     def test_that_no_start_and_end_parameter_temporary_redirects_to_now(self):
         raise SkipTest("Not yet implemented.")
-        response = self.client.get('/1/predictions/tide-levels/liverpool/')
+        response = self.client.get(self.PATH + 'liverpool/')
         assert_equal(302, response.status_code)
 
     def test_that_envelope_has_tide_levels_field(self):
-        response = self.client.get('/1/predictions/tide-levels/liverpool/')
+        response = self.client.get(self.PATH + 'liverpool/')
         data = json.loads(response.content)
         assert_in('tide_levels', data)
 
     def test_that_tide_level_records_have_correct_structure(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/liverpool/'
+            self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = json.loads(response.content)
@@ -59,7 +63,7 @@ class TestTideLevelsView(TestCase):
 
     def test_that_tides_are_given_for_liverpool(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/liverpool/'
+            self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = json.loads(response.content)
@@ -71,7 +75,7 @@ class TestTideLevelsView(TestCase):
 
     def test_that_tides_are_given_for_southampton(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/southampton/'
+            self.PATH + 'southampton/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = json.loads(response.content)
@@ -83,7 +87,7 @@ class TestTideLevelsView(TestCase):
 
     def test_that_the_start_parameter_filters_inclusively(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/liverpool/'
+            self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z')
         data = json.loads(response.content)
 
@@ -94,7 +98,7 @@ class TestTideLevelsView(TestCase):
 
     def test_that_the_end_parameter_filters_exclusively(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/liverpool/'
+            self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:02:00Z'
         )
@@ -105,7 +109,7 @@ class TestTideLevelsView(TestCase):
         )
 
 
-class TestTideLevelsViewLimitingQueries(TestCase):
+class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
     ]
@@ -127,7 +131,7 @@ class TestTideLevelsViewLimitingQueries(TestCase):
 
     def test_that_results_are_limited_to_1_hour(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/liverpool/'
+            self.PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-02T00:00:00Z'
         )
@@ -135,7 +139,7 @@ class TestTideLevelsViewLimitingQueries(TestCase):
         assert_equal(1 * 60, len(data['tide_levels']))
 
 
-class TestTideLevelsViewOrderingResults(TestCase):
+class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
     ]
@@ -157,7 +161,7 @@ class TestTideLevelsViewOrderingResults(TestCase):
 
     def test_that_results_are_ordered_by_datetime(self):
         response = self.client.get(
-            '/1/predictions/tide-levels/liverpool/'
+            self.PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-02T00:00:00Z'
         )
