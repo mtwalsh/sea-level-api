@@ -23,7 +23,7 @@ class TideWindows(ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         predictions = get_prediction_queryset(
-            self.kwargs['location_slug'],
+            self.kwargs.get('location_slug', None),
             self.request.QUERY_PARAMS.get('start', None),
             self.request.QUERY_PARAMS.get('end', None)
         )

@@ -24,6 +24,10 @@ class NoStartTimeGivenError(Exception):
 
 
 def get_prediction_queryset(location_slug, start_param, end_param):
+    if location_slug is None:
+        raise InvalidLocationError(
+            'No location given, see locations endpoint.')
+
     try:
         location = Location.objects.get(slug=location_slug)
     except ObjectDoesNotExist:

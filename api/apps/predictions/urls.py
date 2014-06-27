@@ -8,6 +8,9 @@ DATETIME_REGEX = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z'
 urlpatterns = patterns(
     '',
 
+    url(r'^tide-levels/$', TideLevels.as_view()),
+    url(r'^tide-windows/$', TideWindows.as_view()),
+
     url(r'^tide-levels/(?P<location_slug>' + SLUG_REGEX + ')/$',
         TideLevels.as_view(),
         name='tide-levels'),
