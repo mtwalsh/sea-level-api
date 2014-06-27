@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sealevelresearch/sea-level-api.svg)](https://travis-ci.org/sealevelresearch/sea-level-api)
+[![Build Status](https://travis-ci.org/sealevelresearch/sea-level-api.svg?branch=master)](https://travis-ci.org/sealevelresearch/sea-level-api)
 
 # Configuring a new Heroku app
 
