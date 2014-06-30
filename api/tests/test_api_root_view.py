@@ -35,5 +35,5 @@ class TestAPIRootView(TestCase):
 
         assert_equal(
             set([self.expand_path(p) for p in expected_paths]),
-            set(data['links'])
+            set([link['href'] for link in data['links']])
         )

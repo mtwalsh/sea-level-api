@@ -4,11 +4,11 @@ from rest_framework.reverse import reverse
 
 
 class ApiRoot(generics.GenericAPIView):
-    def get(self, request, format=None):
+    def get(self, req, format=None):
         return Response({
             'links': [
-                reverse('location-list', request=request, format=format),
-                reverse('tide-levels', request=request, format=format),
-                reverse('tide-windows', request=request, format=format),
+                {'href': reverse('location-list', request=req, format=format)},
+                {'href': reverse('tide-levels', request=req, format=format)},
+                {'href': reverse('tide-windows', request=req, format=format)},
             ]
         })
