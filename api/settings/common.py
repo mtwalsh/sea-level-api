@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'corsheaders',
 
     'api.apps.predictions',
     'api.apps.locations',
@@ -58,6 +59,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -122,3 +124,18 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     # ]
 }
+
+# Cross-origin Resource Sharing (CORS)
+# See https://github.com/ottoyiu/django-cors-headers/ and
+#     http://www.html5rocks.com/en/tutorials/cors/
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_METHODS = (
+    'GET',
+    'OPTIONS',
+)
+
+CORS_ALLOW_CREDENTIALS = False
+
+CORS_PREFLIGHT_MAX_AGE = 3 * 3600
