@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from views import TideLevels, TideWindows
+from views import TideLevels, TideWindows, TideWindowsNow
 
 SLUG_REGEX = '[a-z0-9-]+'
 DATETIME_REGEX = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z'
@@ -17,5 +17,9 @@ urlpatterns = patterns(
 
     url(r'^tide-windows/(?P<location_slug>' + SLUG_REGEX + ')/$',
         TideWindows.as_view(),
+        name='tide-windows'),
+
+    url(r'^tide-windows/(?P<location_slug>' + SLUG_REGEX + ')/now/$',
+        TideWindowsNow.as_view(),
         name='tide-windows'),
 )

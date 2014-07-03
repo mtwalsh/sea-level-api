@@ -21,11 +21,14 @@ class TideWindows(ListAPIView):
     renderer_classes = replace_json_renderer(ListAPIView.renderer_classes)
     serializer_class = TideWindowSerializer
 
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self, query_params=None, *args, **kwargs):
+        if query_params is None:
+            query_params = self.request.QUERY_PARAMS
+
         predictions = get_prediction_queryset(
             self.kwargs.get('location_slug', None),
-            self.request.QUERY_PARAMS.get('start', None),
-            self.request.QUERY_PARAMS.get('end', None)
+            query_params.get('start', None),
+            query_params.get('end', None)
         )
 
         try:

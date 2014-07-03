@@ -129,7 +129,7 @@ def add_start_of_now_to_url(url):
     """
     p = urlparse(url)
     query_params = parse_qsl(p.query)
-    query_params.append(('start', get_utc_now_rounded()))
+    query_params.append(('start', format_datetime(now_rounded())))
 
     return urlunparse(
         (p.scheme,
@@ -140,6 +140,16 @@ def add_start_of_now_to_url(url):
          p.fragment))
 
 
-def get_utc_now_rounded():
+def now_rounded():
     now = datetime.datetime.now(pytz.UTC).replace(second=0, microsecond=0)
-    return now.strftime(DATETIME_FORMAT)
+    return now
+
+
+def format_datetime(dt):
+    """
+    >>> format_datetime(datetime.datetime(2014, 5, 3, 13, 4, 0,\
+                                          tzinfo=pytz.UTC))
+    '2014-05-03T13:04:00Z'
+    """
+    assert dt.tzinfo is not None, dt
+    return dt.strftime(DATETIME_FORMAT)
