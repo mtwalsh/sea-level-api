@@ -2,8 +2,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
-from rest_framework.reverse import reverse
-
 from .api_root_view import ApiRoot
 
 urlpatterns = [

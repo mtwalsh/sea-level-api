@@ -2,7 +2,6 @@ from rest_framework.generics import ListAPIView
 
 from api.libs.json_envelope_renderer import replace_json_renderer
 
-from ..models import Prediction
 from ..serializers import TideLevelSerializer
 
 from .helpers import get_prediction_queryset
