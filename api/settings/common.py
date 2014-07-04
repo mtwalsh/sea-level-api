@@ -76,6 +76,9 @@ ROOT_URLCONF = 'api.urls'
 
 WSGI_APPLICATION = 'api.wsgi.application'
 
+TEMPLATE_DIRS = (
+    pjoin(BASE_DIR, 'template'),
+)
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
