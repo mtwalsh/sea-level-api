@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from views import TideLevels, TideWindows, TideWindowsNow
+from .views import TideLevels, TideWindows, TideWindowsNow
 
 SLUG_REGEX = '[a-z0-9-]+'
 DATETIME_REGEX = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z'

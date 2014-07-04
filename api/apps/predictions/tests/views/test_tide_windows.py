@@ -33,7 +33,7 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
         data = decode_json(response.content)
         assert_equal(400, response.status_code)
         assert_equal(
-            {'detail': u'Missing required query parameter `tide_level`'},
+            {'detail': 'Missing required query parameter `tide_level`'},
             data)
 
     def test_that_envelope_has_tide_windows_field(self):

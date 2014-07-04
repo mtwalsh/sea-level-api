@@ -1,9 +1,12 @@
 import datetime
 
 from collections import namedtuple
-from itertools import tee, izip
-from urlparse import urlparse, urlunparse, parse_qsl
-from urllib import urlencode
+from itertools import tee
+
+try:
+    from itertools import izip as zip  # On 2, replace zip with izip
+except ImportError:
+    pass  # Python 3 has zip already
 
 import pytz
 
@@ -76,7 +79,7 @@ def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
     next(b, None)
-    return izip(a, b)
+    return zip(a, b)
 
 
 def split_prediction_windows(predictions):
@@ -121,23 +124,6 @@ def _split_prediction_windows_unfiltered(predictions):
         last_prediction_seen = p1
 
     yield window_start, last_prediction_seen
-
-
-def add_start_of_now_to_url(url):
-    """
-    Add eg ?start=2014-05-18T16:45:00Z to a URL
-    """
-    p = urlparse(url)
-    query_params = parse_qsl(p.query)
-    query_params.append(('start', format_datetime(now_rounded())))
-
-    return urlunparse(
-        (p.scheme,
-         p.netloc,
-         p.path,
-         p.params,
-         urlencode(query_params),
-         p.fragment))
 
 
 def now_rounded():

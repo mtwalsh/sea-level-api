@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import datetime
 import pytz
 
@@ -11,7 +13,10 @@ from api.apps.predictions.models import Prediction
 from api.apps.predictions.management.commands.import_predictions import (
     load_predictions, nuke_predictions)
 
-from cStringIO import StringIO
+try:
+    from io import StringIO         # Python 3
+except ImportError:
+    from cStringIO import StringIO  # Python 2
 
 
 class TestImportPredictionsCommand(TestCase):
@@ -40,13 +45,13 @@ class TestImportPredictionsCommand(TestCase):
             {
                 'datetime': datetime.datetime(2014, 6, 1, 0, 0,
                                               tzinfo=pytz.UTC),
-                'location': u'liverpool',
+                'location': 'liverpool',
                 'tide_level': 8.55
             },
             {
                 'datetime': datetime.datetime(2014, 6, 1, 0, 1,
                                               tzinfo=pytz.UTC),
-                'location': u'liverpool',
+                'location': 'liverpool',
                 'tide_level': 8.56
             }
         ],

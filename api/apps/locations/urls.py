@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from views import LocationList, LocationDetail
+from .views import LocationList, LocationDetail
 
 urlpatterns = patterns(
     '',
