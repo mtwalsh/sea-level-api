@@ -3,12 +3,12 @@ from nose.tools import assert_equal, assert_in, assert_not_in
 
 from api.apps.predictions.models import Prediction
 from api.apps.locations.models import Location
+from api.libs.test_utils import decode_json
 
 from .test_location_parsing import LocationParsingTestMixin
 from .test_time_parsing import TimeParsingTestMixin
 
 import datetime
-import json
 
 import pytz
 
@@ -26,7 +26,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
     def test_that_envelope_has_tide_levels_field(self):
         response = self.client.get(self.PATH + 'liverpool/')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_in('tide_levels', data)
 
     def test_that_tide_level_records_have_correct_structure(self):
@@ -34,7 +34,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
             self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         tide_levels = data['tide_levels']
         expected = {
             'datetime': '2014-06-17T09:00:00Z',
@@ -47,7 +47,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
             self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         tide_levels = data['tide_levels']
         assert_equal(
             [10.3, 10.8, 10.9],  # Liverpool values
@@ -59,7 +59,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
             self.PATH + 'southampton/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         tide_levels = data['tide_levels']
         assert_equal(
             [4.0, 4.3, 4.1],  # Southampton values
@@ -70,7 +70,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
         response = self.client.get(
             self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
 
         assert_in(
             '2014-06-17T09:00:00Z',
@@ -83,7 +83,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:02:00Z'
         )
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_not_in(
             '2014-06-17T09:02:00Z',
             [t['datetime'] for t in data['tide_levels']]
@@ -116,7 +116,7 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-02T00:00:00Z'
         )
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_equal(1 * 60, len(data['tide_levels']))
 
 
@@ -146,7 +146,7 @@ class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-02T00:00:00Z'
         )
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         datetimes = [t['datetime'] for t in data['tide_levels']]
         assert_equal(
             [

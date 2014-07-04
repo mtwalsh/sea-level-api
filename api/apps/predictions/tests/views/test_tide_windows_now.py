@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import pytz
 
@@ -8,6 +7,7 @@ from freezegun import freeze_time
 
 from api.apps.predictions.models import Prediction
 from api.apps.locations.models import Location
+from api.libs.test_utils import decode_json
 
 from .test_tide_windows import TestTideWindowsViewBase
 
@@ -71,7 +71,7 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
             response = self.client.get(
                 self.PATH + 'liverpool/now/?tide_level=4.5')
 
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_equal(1, len(data['tide_windows']))
         assert_equal(
             {

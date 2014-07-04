@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import pytz
 
@@ -9,6 +8,7 @@ from nose.tools import assert_equal, assert_in
 
 from api.apps.predictions.models import Prediction
 from api.apps.locations.models import Location
+from api.libs.test_utils import decode_json
 
 from .test_location_parsing import LocationParsingTestMixin
 from .test_time_parsing import TimeParsingTestMixin
@@ -30,10 +30,10 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
             self.PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_equal(400, response.status_code)
         assert_equal(
-            {'detail': u'Missing required query parameter `tide_level`'},
+            {'detail': 'Missing required query parameter `tide_level`'},
             data)
 
     def test_that_envelope_has_tide_windows_field(self):
@@ -42,7 +42,7 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
             '?start=2014-06-17T00:00:00Z'
             '&end=2014-06-18T00:00:00Z'
             '&tide_level=10.7')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_in('tide_windows', data)
 
     def test_that_tide_window_records_have_correct_structure(self):
@@ -51,7 +51,7 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
             '?start=2014-06-17T00:00:00Z'
             '&end=2014-06-18T00:00:00Z'
             '&tide_level=10.7')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         tide_windows = data['tide_windows']
         expected = {
             'start': {
@@ -117,7 +117,7 @@ class TestTideWindowsCalculationsView(TestTideWindowsViewBase):
             '&end=2014-06-02T11:00:00Z'
             '&tide_level=5.5'
         )
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_equal([
             {
                 'start': {
@@ -142,7 +142,7 @@ class TestTideWindowsCalculationsView(TestTideWindowsViewBase):
             '&end=2014-06-02T11:00:00Z'
             '&tide_level=5.1'
         )
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_equal([
             {
                 'start': {
@@ -181,5 +181,5 @@ class TestTideWindowsCalculationsView(TestTideWindowsViewBase):
             '&end=2014-06-02T11:00:00Z'
             '&tide_level=6.1'
         )
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_equal([], data['tide_windows'])

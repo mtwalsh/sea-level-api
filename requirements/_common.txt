@@ -4,6 +4,6 @@ django-filter==0.7
 Markdown==2.4.1
 pytz==2014.4                                                                    
 psycopg2==2.5.3
-python-batcher==0.0.1
+python-batcher==0.0.2
 django-docopt-command==0.1.0
 django-cors-headers==0.12
