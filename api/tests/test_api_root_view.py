@@ -1,7 +1,7 @@
 from django.test import TestCase
 from nose.tools import assert_equal, assert_in
 
-import json
+from api.libs.test_utils import decode_json
 
 
 class TestAPIRootView(TestCase):
@@ -21,12 +21,12 @@ class TestAPIRootView(TestCase):
 
     def test_that_envelope_has_links_field(self):
         response = self.client.get('/1/')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
         assert_in('links', data)
 
     def test_that_root_api_has_correct_links(self):
         response = self.client.get('/1/')
-        data = json.loads(response.content)
+        data = decode_json(response.content)
 
         expected_paths = [
             '/1/locations/',
