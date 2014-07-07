@@ -6,7 +6,8 @@ from api.libs.json_envelope_renderer import replace_json_renderer
 
 from ..serializers import TideWindowSerializer
 
-from .helpers import get_prediction_queryset, split_prediction_windows
+from .helpers import (parse_and_get_queryset,
+                      split_prediction_windows)
 from .exceptions import MissingParameterException
 
 TimeWindow = namedtuple('TimeWindow', 'first_prediction,last_prediction')
@@ -25,7 +26,7 @@ class TideWindows(ListAPIView):
         if query_params is None:
             query_params = self.request.QUERY_PARAMS
 
-        predictions = get_prediction_queryset(
+        predictions = parse_and_get_queryset(
             self.kwargs.get('location_slug', None),
             query_params.get('start', None),
             query_params.get('end', None)
