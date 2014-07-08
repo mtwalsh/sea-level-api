@@ -33,8 +33,8 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
         day = 86400
 
         for minute, level in [
-            (-5, 4.50),
-            (-4, 4.75),
+            (-5, 4.0),
+            (-4, 4.51),
             (-3, 5.00),
             (-2, 5.10),
             (-1, 4.60),
@@ -63,10 +63,9 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
     def test_that_now_endpoint_returns_http_200_ok(self):
         response = self.client.get(
             self.PATH + 'liverpool/now/?tide_level=4.5')
-        print(response.content)
         assert_equal(200, response.status_code)
 
-    def test_that_windows_start_now_and_end_in_24_hours(self):
+    def test_that_now_searches_from_now_to_24_hours(self):
         with freeze_time("2014-06-01T10:00:00Z"):
             response = self.client.get(
                 self.PATH + 'liverpool/now/?tide_level=4.5')
@@ -76,15 +75,15 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
         assert_equal(
             {
                 'start': {
-                    'datetime': '2014-06-01T10:00:00Z',
-                    'tide_level': 4.50,
+                    'datetime': '2014-06-01T09:56:00Z',
+                    'tide_level': 4.51,
                 },
                 'end': {
                     'datetime': '2014-06-01T10:05:00Z',
                     'tide_level': 4.55,
                 },
                 'duration': {
-                    'total_seconds': 360,
+                    'total_seconds': 600,
                 }
             },
             data['tide_windows'][0]

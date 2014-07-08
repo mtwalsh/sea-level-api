@@ -19,10 +19,10 @@ class TideWindowSerializer(serializers.Serializer):
         }
 
     def get_start(self, obj):
-        return self._serialize_prediction(obj.first_prediction)
+        return self._serialize_prediction(obj.start_prediction)
 
     def get_end(self, obj):
-        return self._serialize_prediction(obj.last_prediction)
+        return self._serialize_prediction(obj.end_prediction)
 
     def get_duration(self, obj):
         """
@@ -30,5 +30,5 @@ class TideWindowSerializer(serializers.Serializer):
         and last minute where the level is above a certain amount. That means
         the duration is *inclusive* of the final time - so we add a minute.
         """
-        timediff = obj.last_prediction.datetime - obj.first_prediction.datetime
+        timediff = obj.end_prediction.datetime - obj.start_prediction.datetime
         return {'total_seconds': timediff.total_seconds() + 60}

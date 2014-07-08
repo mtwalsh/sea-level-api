@@ -4,7 +4,7 @@ from api.libs.json_envelope_renderer import replace_json_renderer
 
 from ..serializers import TideLevelSerializer
 
-from .helpers import get_prediction_queryset
+from .helpers import parse_and_get_queryset
 
 
 class TideLevels(ListAPIView):
@@ -16,7 +16,7 @@ class TideLevels(ListAPIView):
     serializer_class = TideLevelSerializer
 
     def get_queryset(self):
-        return get_prediction_queryset(
+        return parse_and_get_queryset(
             self.kwargs.get('location_slug', None),
             self.request.QUERY_PARAMS.get('start', None),
             self.request.QUERY_PARAMS.get('end', None)

@@ -25,7 +25,10 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
     ]
 
     def test_that_envelope_has_tide_levels_field(self):
-        response = self.client.get(self.PATH + 'liverpool/')
+        response = self.client.get(
+            self.PATH + 'liverpool/'
+            '?start=2014-06-17T09:00:00Z'
+            '&end=2014-06-17T09:05:00Z')
         data = decode_json(response.content)
         assert_in('tide_levels', data)
 

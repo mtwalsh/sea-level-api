@@ -15,18 +15,33 @@ from django.core.exceptions import ObjectDoesNotExist
 from api.apps.locations.models import Location
 from ..models import Prediction
 
-from .exceptions import InvalidLocationError
+from .exceptions import InvalidLocationError, NoStartTimeGivenError
 
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 TimeRange = namedtuple('TimeRange', 'start,end')
 
 
-class NoStartTimeGivenError(Exception):
-    pass
+def parse_and_get_queryset(location_slug, start_param, end_param):
+    location = parse_location(location_slug)
+    time_range = parse_time_range(start_param, end_param)
+    return get_queryset(location, time_range)
 
 
-def get_prediction_queryset(location_slug, start_param, end_param):
+def get_queryset(location, time_range):
+    queryset = Prediction.objects.filter(
+        location=location,
+        datetime__gte=time_range.start,
+        datetime__lt=time_range.end)
+
+    return queryset.order_by('datetime')
+
+
+def parse_location(location_slug):
+    """
+    From a location slug ie 'liverpool-gladstone-dock', return a Location model
+    object or blow up with an appropriate API Exception.
+    """
     if location_slug is None:
         raise InvalidLocationError(
             'No location given, see locations endpoint.')
@@ -37,23 +52,7 @@ def get_prediction_queryset(location_slug, start_param, end_param):
         raise InvalidLocationError(
             'Invalid location: "{}". See locations endpoint.'.format(
                 location_slug))
-
-    try:
-        time_range = parse_time_range(start_param, end_param)
-    except NoStartTimeGivenError:
-        # TODO: Implement list() method and redirect if no start parameter
-        # is given. See ListModelMixin
-        return Prediction.objects.none()
-
-    queryset = Prediction.objects.filter(
-        location=location)
-
-    queryset = queryset.filter(datetime__gte=time_range.start)
-
-    if time_range.end:
-        queryset = queryset.filter(datetime__lt=time_range.end)
-
-    return queryset.order_by('datetime')
+    return location
 
 
 def parse_time_range(start, end):
@@ -63,7 +62,7 @@ def parse_time_range(start, end):
     start_time = parse_datetime(start)
 
     if end is None:
-        end_time = start_time + datetime.timedelta(hours=6)
+        end_time = start_time + datetime.timedelta(hours=6)  # TODO: test this
     else:
         end_time = parse_datetime(end)
 
