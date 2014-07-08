@@ -15,7 +15,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from api.apps.locations.models import Location
 from ..models import Prediction
 
-from .exceptions import InvalidLocationError, NoStartTimeGivenError
+from .exceptions import (InvalidLocationError, NoStartTimeGivenError,
+                         NoEndTimeGivenError)
 
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -59,14 +60,10 @@ def parse_time_range(start, end):
     if start is None:
         raise NoStartTimeGivenError()
 
-    start_time = parse_datetime(start)
-
     if end is None:
-        end_time = start_time + datetime.timedelta(hours=6)  # TODO: test this
-    else:
-        end_time = parse_datetime(end)
+        raise NoEndTimeGivenError()
 
-    return TimeRange(start=start_time, end=end_time)
+    return TimeRange(start=parse_datetime(start), end=parse_datetime(end))
 
 
 def parse_datetime(datetime_string):

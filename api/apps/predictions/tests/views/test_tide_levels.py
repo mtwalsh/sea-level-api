@@ -72,7 +72,8 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
     def test_that_the_start_parameter_filters_inclusively(self):
         response = self.client.get(
             self.PATH + 'liverpool/'
-            '?start=2014-06-17T09:00:00Z')
+            '?start=2014-06-17T09:00:00Z' +
+            '&end=2014-06-18T09:00:00Z')
         data = decode_json(response.content)
 
         assert_in(
