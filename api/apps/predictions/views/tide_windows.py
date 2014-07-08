@@ -10,7 +10,7 @@ from .helpers import (parse_and_get_queryset,
                       split_prediction_windows)
 from .exceptions import MissingParameterException
 
-TimeWindow = namedtuple('TimeWindow', 'first_prediction,last_prediction')
+TimeWindow = namedtuple('TimeWindow', 'start_prediction,end_prediction')
 
 
 class TideWindows(ListAPIView):
@@ -47,6 +47,6 @@ def make_tide_time_windows(all_predictions_above_threshold):
     for start, end in split_prediction_windows(
             all_predictions_above_threshold):
         yield TimeWindow(
-            first_prediction=start,
-            last_prediction=end
+            start_prediction=start,
+            end_prediction=end
         )
