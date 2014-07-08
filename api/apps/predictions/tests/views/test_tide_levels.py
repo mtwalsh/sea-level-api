@@ -106,21 +106,21 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
     @classmethod
     def create_lots_of_tide_level_entries(cls):
         location = Location.objects.get(slug='liverpool')
-        for minute in range(2 * 60):
+        for minute in range(30 * 60):
             Prediction.objects.create(
                 location=location,
                 datetime=cls.base_time + datetime.timedelta(minutes=minute),
                 tide_level=5.0
             )
 
-    def test_that_results_are_limited_to_1_hour(self):
+    def test_that_results_are_limited_to_24_hours_1440_records(self):
         response = self.client.get(
             self.PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
-            '&end=2014-06-02T00:00:00Z'
+            '&end=2014-06-03T00:00:00Z'
         )
         data = decode_json(response.content)
-        assert_equal(1 * 60, len(data['tide_levels']))
+        assert_equal(24 * 60, len(data['tide_levels']))
 
 
 class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):

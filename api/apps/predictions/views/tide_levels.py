@@ -15,9 +15,12 @@ class TideLevels(ListAPIView):
     renderer_classes = replace_json_renderer(ListAPIView.renderer_classes)
     serializer_class = TideLevelSerializer
 
-    def get_queryset(self):
+    def get_queryset(self, query_params=None, *args, **kwargs):
+        if query_params is None:
+            query_params = self.request.QUERY_PARAMS
+
         return parse_and_get_queryset(
             self.kwargs.get('location_slug', None),
-            self.request.QUERY_PARAMS.get('start', None),
-            self.request.QUERY_PARAMS.get('end', None)
-        )[:60]  # limit to 60
+            query_params.get('start', None),
+            query_params.get('end', None)
+        )[:24 * 60]  # limit to 24 hours of data
