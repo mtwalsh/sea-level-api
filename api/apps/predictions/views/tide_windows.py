@@ -2,6 +2,13 @@ import datetime
 
 from functools import partial
 
+try:
+    # Python 2: use iterator versions
+    from itertools import imap as map
+    from itertools import ifilter as filter
+except ImportError:
+    pass
+
 from rest_framework.generics import ListAPIView
 
 from api.libs.json_envelope_renderer import replace_json_renderer
