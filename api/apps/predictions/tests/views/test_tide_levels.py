@@ -15,12 +15,12 @@ import pytz
 
 class TestTideLevelsViewBase(TestCase):
     PATH = '/1/predictions/tide-levels/'
+    fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
 
 class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
                          TimeParsingTestMixin):
-    fixtures = [
-        'api/apps/locations/fixtures/two_locations.json',
+    fixtures = TestTideLevelsViewBase.fixtures + [
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
 
@@ -95,10 +95,6 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
 
 class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
-    fixtures = [
-        'api/apps/locations/fixtures/two_locations.json',
-    ]
-
     @classmethod
     def setUp(cls):
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
@@ -125,10 +121,6 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
 
 
 class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
-    fixtures = [
-        'api/apps/locations/fixtures/two_locations.json',
-    ]
-
     @classmethod
     def setUp(cls):
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
