@@ -120,6 +120,84 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
         assert_equal(24 * 60, len(data['tide_levels']))
 
 
+class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
+    @classmethod
+    def setUp(cls):
+        cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
+        cls.create_60_entries()
+
+    @classmethod
+    def create_60_entries(cls):
+        location = Location.objects.get(slug='liverpool')
+        for minute in range(60):
+            Prediction.objects.create(
+                location=location,
+                datetime=cls.base_time + datetime.timedelta(minutes=minute),
+                tide_level=5.0
+            )
+
+    def _get_response_for_interval(self, interval_string):
+        return self.client.get(
+            self.PATH + 'liverpool/'
+            '?start=2014-06-01T00:00:00Z'
+            '&end=2014-06-03T00:00:00Z'
+            '&interval={}'.format(interval_string)
+        )
+
+    def test_that_default_interval_is_one_minute(self):
+        response = self.client.get(
+            self.PATH + 'liverpool/'
+            '?start=2014-06-01T00:00:00Z'
+            '&end=2014-06-03T00:00:00Z'
+        )
+        tide_levels = decode_json(response.content)['tide_levels']
+        assert_equal(60, len(tide_levels))
+
+        assert_equal('2014-06-01T10:30:00Z', tide_levels[0]['datetime'])
+        assert_equal('2014-06-01T10:31:00Z', tide_levels[1]['datetime'])
+        assert_equal('2014-06-01T10:32:00Z', tide_levels[2]['datetime'])
+
+    def test_that_non_integer_interval_gives_http_400(self):
+        response = self._get_response_for_interval('foo')
+
+        assert_equal(400, response.status_code)
+        assert_equal(
+            {'detail': 'Invalid interval: expected integer (minutes)'},
+            decode_json(response.content))
+
+    def test_that_interval_must_be_above_1(self):
+        response = self._get_response_for_interval('0')
+        assert_equal(400, response.status_code)
+
+        assert_equal(
+            {'detail': 'Invalid interval: must be between 1 and 60 minutes'},
+            decode_json(response.content))
+
+    def test_that_interval_must_be_below_61(self):
+        response = self._get_response_for_interval('61')
+        assert_equal(400, response.status_code)
+
+        assert_equal(
+            {'detail': 'Invalid interval: must be between 1 and 60 minutes'},
+            decode_json(response.content))
+
+    def test_that_five_minute_interval_works(self):
+        response = self._get_response_for_interval('5')
+        tide_levels = decode_json(response.content)['tide_levels']
+
+        assert_equal(12, len(tide_levels))
+        assert_equal('2014-06-01T10:30:00Z', tide_levels[0]['datetime'])
+        assert_equal('2014-06-01T10:35:00Z', tide_levels[1]['datetime'])
+        assert_equal('2014-06-01T10:40:00Z', tide_levels[2]['datetime'])
+
+    def test_that_sixty_minute_interval_works(self):
+        response = self._get_response_for_interval('60')
+        tide_levels = decode_json(response.content)['tide_levels']
+
+        assert_equal(1, len(tide_levels))
+        assert_equal('2014-06-01T10:30:00Z', tide_levels[0]['datetime'])
+
+
 class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
     @classmethod
     def setUp(cls):
