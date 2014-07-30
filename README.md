@@ -94,8 +94,9 @@ Returns time windows during which the tide level will be above a given height in
     "datetime": "2014-08-01T16:14:00Z",
     "predicted_tide_level": 8.45,
     "predicted_surge_level": 0.20,
+    "predicted_sea_level": 8.65,
     "observed_sea_level": 8.70,
-    "derived_surge_height": 0.25,
+    "derived_surge_level": 0.25,
   }
   ]
 }
