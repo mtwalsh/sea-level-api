@@ -59,6 +59,7 @@ INSTALLED_APPS = (
 
     'api.apps.predictions',
     'api.apps.locations',
+    'api.apps.ea_sea_levels',
 )
 
 MIDDLEWARE_CLASSES = (
