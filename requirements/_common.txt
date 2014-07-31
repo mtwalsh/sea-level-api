@@ -7,3 +7,6 @@ psycopg2==2.5.3
 python-batcher==0.0.2
 django-docopt-command==0.1.0
 django-cors-headers==0.12
+lxml==3.3.5
+backoff==1.0.3
+requests==2.3.0
