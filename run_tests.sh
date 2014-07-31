@@ -5,7 +5,7 @@ THIS_DIR=$(dirname ${THIS_SCRIPT})
 
 
 function nuke_pyc_files {
-  find . -iname '*.pyc' -exec rm {} +
+  make clean
 }
 
 function run_pep8_style_checks {
