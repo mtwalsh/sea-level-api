@@ -128,6 +128,9 @@ heroku addons:add pgbackups --app ${APP_NAME}
 # SECRET_KEY
 heroku config:set SECRET_KEY=$(openssl rand -base64 64) --app ${APP_NAME}
 
+# SCHEDULER
+heroku addons:add scheduler --app ${APP_NAME}
+
 # DOMAINS
 heroku domains:add ${DOMAIN} --app ${APP_NAME}
 

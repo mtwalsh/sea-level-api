@@ -1,0 +1,3 @@
+[submodule "api/libs/ea_measurement_collector"]
+	path = api/libs/ea_measurement_collector
+	url = https://github.com/sealevelresearch/ea-measurement-collector.git
