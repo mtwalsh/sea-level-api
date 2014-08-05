@@ -25,5 +25,10 @@ class Station(models.Model):
         max_length=10,
         help_text='The datum against which a measurement is taken.')
 
+    chart_datum_offset = models.FloatField(
+        default=4.93,  # TODO: remove this default after first migration
+        help_text='Number of metres to add to measurements at this station '
+                  'to convert to the Admiralty Chart Datum at this location.')
+
     def __str__(self):
         return self.station_name
