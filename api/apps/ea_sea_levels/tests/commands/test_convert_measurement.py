@@ -130,10 +130,12 @@ class TestMakeLinearInterpolations(TestCase):
         )
 
     def test_that_interpolations_wont_occur_for_more_than_15_mins(self):
+        # But we should still convert the *actual* measurements even though
+        # we don't interpolate between them.
         interpolations = list(make_linear_interpolations(
             start=self.make_datetime(30),
             end=self.make_datetime(60)))
-        assert_equal(0, len(interpolations))
+        assert_equal(2, len(interpolations))
 
     def test_that_interpolations_occur_for_15_mins(self):
         interpolations = list(make_linear_interpolations(
