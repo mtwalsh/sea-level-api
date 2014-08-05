@@ -1,0 +1,13 @@
+[
+{
+    "fields": {
+        "station_name": "Liverpool",
+        "location": 1,
+        "station_id": 5084,
+        "site_datum": "0 m AOD",
+        "chart_datum_offset": 4.93
+    },
+    "model": "ea_sea_levels.station",
+    "pk": 1
+}
+]

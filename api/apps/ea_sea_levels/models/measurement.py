@@ -9,7 +9,7 @@ class Measurement(models.Model):
     class Meta:
         app_label = 'ea_sea_levels'
 
-    station = models.ForeignKey(Station)
+    station = models.ForeignKey(Station, related_name='measurements')
     datetime = models.DateTimeField(
         help_text='The date & time at which the measurement was taken')
     measurement = models.FloatField(
