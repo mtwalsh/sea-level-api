@@ -94,16 +94,14 @@ def make_linear_interpolations(start, end):
 
     for measure_1, measure_2 in pairwise(measurements):
         mins_between = to_minutes(measure_2.datetime - measure_1.datetime)
-        if mins_between > 15:
-            continue
-
         delta_y = ((measure_2.measurement - measure_1.measurement)
                    / mins_between)
 
         yield (measure_1.datetime, rounded(measure_1.measurement), False)
-        for i in range(1, mins_between):
-            dt = measure_1.datetime + datetime.timedelta(minutes=i)
-            yield (dt, rounded(measure_1.measurement + delta_y * i), True)
+        if mins_between <= 15:  # don't interpolate larger period than 15m
+            for i in range(1, mins_between):
+                dt = measure_1.datetime + datetime.timedelta(minutes=i)
+                yield (dt, rounded(measure_1.measurement + delta_y * i), True)
         yield (measure_2.datetime, rounded(measure_2.measurement), False)
 
 
