@@ -14,7 +14,7 @@ function run_pep8_style_checks {
 
     flake8 \
         --ignore=F401,F403 \
-        --exclude='api/apps/*/migrations/*.py' \
+        --exclude='api/*/*/migrations/*.py' \
     .
 
     # F403: don't allow `from foo import *` except in settings
