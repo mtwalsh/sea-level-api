@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 from api.apps.locations.models import Location
+from api.libs.minute_in_time.models import Minute
 
 
 @python_2_unicode_compatible
@@ -11,6 +12,12 @@ class Prediction(models.Model):
     class Meta:
         app_label = 'predictions'
         unique_together = ('location', 'datetime')
+
+    minute = models.ForeignKey(
+        Minute,
+        related_name='predictions',
+        blank=True, null=True  # TODO: remove after migrating all predictions
+    )
 
     datetime = models.DateTimeField(unique=False)
     location = models.ForeignKey(Location)
