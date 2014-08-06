@@ -32,10 +32,10 @@ def parse_and_get_queryset(location_slug, start_param, end_param):
 def get_queryset(location, time_range):
     queryset = Prediction.objects.filter(
         location=location,
-        datetime__gte=time_range.start,
-        datetime__lt=time_range.end)
+        minute__datetime__gte=time_range.start,
+        minute__datetime__lt=time_range.end)
 
-    return queryset.order_by('datetime')
+    return queryset.order_by('minute__datetime')
 
 
 def parse_location(location_slug):
@@ -108,13 +108,13 @@ def _split_prediction_windows_unfiltered(predictions):
     last_prediction_seen = None
 
     for p0, p1 in pairwise(predictions):
-        timediff = p1.datetime - p0.datetime
+        timediff = p1.minute.datetime - p0.minute.datetime
 
         if timediff > one_minute:
             yield window_start, p0
             window_start = p1
 
-        elif p0.datetime >= p1.datetime:
+        elif p0.minute.datetime >= p1.minute.datetime:
             raise ValueError("Predictions must be ordered and ascending.")
 
         last_prediction_seen = p1

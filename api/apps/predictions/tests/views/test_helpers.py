@@ -8,10 +8,19 @@ from django.test import TestCase
 from api.apps.predictions.views.helpers import split_prediction_windows
 
 
+class FakeMinute(object):
+    def __init__(self, datetime):
+        self.datetime = datetime
+
+
 class FakePrediction(object):
+    """
+    Lightweight pretend Prediction object for testing calculations without
+    hitting the database.
+    """
     def __init__(self, minute):
-        self.datetime = TestSplitPrediction.BASE_DATETIME.replace(
-            minute=minute)
+        self.minute = FakeMinute(
+            TestSplitPrediction.BASE_DATETIME.replace(minute=minute))
 
 
 class TestSplitPrediction(TestCase):
@@ -23,7 +32,8 @@ class TestSplitPrediction(TestCase):
 
     def _split_these_minutes(self, minutes):
         predictions = [FakePrediction(m) for m in minutes]
-        return [(self._to_mins(start.datetime), self._to_mins(end.datetime))
+        return [(self._to_mins(start.minute.datetime),
+                 self._to_mins(end.minute.datetime))
                 for start, end in split_prediction_windows(predictions)]
 
     def test_split_prediction_windows_splits_single_window(self):

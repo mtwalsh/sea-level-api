@@ -5,7 +5,7 @@ import pytz
 from nose.tools import assert_equal
 from freezegun import freeze_time
 
-from api.apps.predictions.models import Prediction
+from api.apps.predictions.utils import create_prediction
 from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
 
@@ -53,8 +53,7 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
             (day + 4, 4.60),
             (day + 5, 4.55),
         ]:
-
-            Prediction.objects.create(
+            create_prediction(
                 location=location,
                 datetime=cls.base_time + datetime.timedelta(minutes=minute),
                 tide_level=level

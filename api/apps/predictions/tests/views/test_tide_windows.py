@@ -6,7 +6,7 @@ from django.test import TestCase
 
 from nose.tools import assert_equal, assert_in
 
-from api.apps.predictions.models import Prediction
+from api.apps.predictions.utils import create_prediction
 from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
 
@@ -29,10 +29,10 @@ class TestTideWindowsViewBase(TestCase):
     @classmethod
     def create_predictions(cls, minutes_and_levels):
         for minute, level in minutes_and_levels:
-            Prediction.objects.create(
-                location=cls.location,
-                datetime=cls.base_time + datetime.timedelta(minutes=minute),
-                tide_level=level
+            create_prediction(
+                cls.location,
+                cls.base_time + datetime.timedelta(minutes=minute),
+                level
             )
 
     @staticmethod

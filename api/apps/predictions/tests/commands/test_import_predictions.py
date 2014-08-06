@@ -9,9 +9,10 @@ from nose.tools import assert_equal
 
 from api.apps.locations.models import Location
 from api.apps.predictions.models import Prediction
+from api.apps.predictions.utils import create_prediction
 
 from api.apps.predictions.management.commands.import_predictions import (
-    load_predictions, nuke_predictions)
+    do_load_predictions, delete_existing_predictions)
 
 try:
     from io import StringIO         # Python 3
@@ -35,22 +36,22 @@ class TestImportPredictionsCommand(TestCase):
     def _serialize(prediction):
         return {
             'location': prediction.location.slug,
-            'datetime': prediction.datetime,
+            'minute__datetime': prediction.minute.datetime,
             'tide_level': prediction.tide_level
         }
 
     def test_load_predictions(self):
-        load_predictions(self.csv_fobj, self.liverpool)
+        do_load_predictions(self.liverpool, self.csv_fobj)
         assert_equal([
             {
-                'datetime': datetime.datetime(2014, 6, 1, 0, 0,
-                                              tzinfo=pytz.UTC),
+                'minute__datetime': datetime.datetime(2014, 6, 1, 0, 0,
+                                                      tzinfo=pytz.UTC),
                 'location': 'liverpool',
                 'tide_level': 8.55
             },
             {
-                'datetime': datetime.datetime(2014, 6, 1, 0, 1,
-                                              tzinfo=pytz.UTC),
+                'minute__datetime': datetime.datetime(2014, 6, 1, 0, 1,
+                                                      tzinfo=pytz.UTC),
                 'location': 'liverpool',
                 'tide_level': 8.56
             }
@@ -58,23 +59,68 @@ class TestImportPredictionsCommand(TestCase):
             [self._serialize(p) for p in Prediction.objects.all()]
         )
 
+    def test_load_predictions_can_update_existing_prediction(self):
+        dt = datetime.datetime(2014, 6, 1, 0, 0, tzinfo=pytz.UTC)
+        create_prediction(self.liverpool, dt, 8.0)
+        do_load_predictions(self.liverpool, self.csv_fobj)
+        assert_equal(
+            {
+                'minute__datetime': datetime.datetime(2014, 6, 1, 0, 0,
+                                                      tzinfo=pytz.UTC),
+                'location': 'liverpool',
+                'tide_level': 8.55
+            },
+            self._serialize(Prediction.objects.get(minute__datetime=dt)))
 
-class TestNukePredictions(TestCase):
+
+class TestDeleteExistingPredictions(TestCase):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
-        'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
 
     @classmethod
     def setUp(cls):
         cls.liv = Location.objects.get(slug='liverpool')
         cls.south = Location.objects.get(slug='southampton')
+        cls.datetime = datetime.datetime(
+            2014, 8, 3, 13, 0, tzinfo=pytz.UTC)
 
-    def test_that_nuke_only_nukes_the_given_location(self):
-        assert_equal(3, len(Prediction.objects.filter(location=self.liv)))
-        assert_equal(3, len(Prediction.objects.filter(location=self.south)))
+        for location in (cls.liv, cls.south):
+            for minute in range(10):
+                dt = cls.datetime + datetime.timedelta(minutes=minute)
+                create_prediction(location, dt, 10.0)
 
-        nuke_predictions(self.liv)
+    def test_that_only_the_given_location_is_deleted(self):
+        delete_existing_predictions(
+            self.liv,
+            self.datetime - datetime.timedelta(hours=1),
+            self.datetime + datetime.timedelta(hours=1))
 
         assert_equal(0, len(Prediction.objects.filter(location=self.liv)))
-        assert_equal(3, len(Prediction.objects.filter(location=self.south)))
+        assert_equal(10, len(Prediction.objects.filter(location=self.south)))
+
+    def test_that_predictions_arent_deleted_before_start_datetime(self):
+        distant_future = self.datetime + datetime.timedelta(hours=1)
+        delete_existing_predictions(
+            self.liv,
+            self.datetime + datetime.timedelta(minutes=3),  # 4th: 13:03
+            distant_future)
+
+        remaining_predictions = Prediction.objects.filter(location=self.liv)
+        assert_equal(3, remaining_predictions.count())
+        assert_equal(
+            self.datetime + datetime.timedelta(minutes=2),
+            list(remaining_predictions)[-1].minute.datetime)
+
+    def test_that_predictions_arent_deleted_before_end_datetime(self):
+        distant_past = self.datetime - datetime.timedelta(hours=1)
+        delete_existing_predictions(
+            self.liv,
+            distant_past,
+            self.datetime + datetime.timedelta(minutes=4))
+
+        remaining_predictions = Prediction.objects.filter(location=self.liv)
+        assert_equal(5, remaining_predictions.count())
+        assert_equal(
+            self.datetime + datetime.timedelta(minutes=5),
+            remaining_predictions[0].minute.datetime)
