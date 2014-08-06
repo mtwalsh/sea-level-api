@@ -38,7 +38,7 @@ function run_more_pep8_checks {
 }
 
 function run_python_unit_tests {
-    python manage.py test
+    python manage.py test --failfast -v 3
 }
 
 nuke_pyc_files
