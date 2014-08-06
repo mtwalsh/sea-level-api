@@ -2,4 +2,5 @@
 .*.swp
 
 api/db.sqlite3
+api/db.sqlite3-journal
 api/static_collected/*
