@@ -21,6 +21,7 @@ class Command(BaseCommand):
 
         predictions = self.get_predictions_without_minute()
         self.attach_minutes(predictions, minute_hash)
+        self.assert_all_predictions_have_minutes()
 
     def get_missing_minute_datetimes(self):
         self.stdout.write("Finding missing Minute objects")
@@ -54,3 +55,8 @@ class Command(BaseCommand):
 
             prediction.minute = minute_hash[prediction.datetime]
             prediction.save()
+        transaction.commit()
+
+    def assert_all_predictions_have_minutes(self):
+        count = Prediction.objects.filter(minute=None).count()
+        assert 0 == count, "{} Predictions have minute=NULL!".format(count)
