@@ -5,7 +5,7 @@ import pytz
 from nose.tools import assert_equal
 from freezegun import freeze_time
 
-from api.apps.predictions.models import Prediction
+from api.apps.predictions.utils import create_prediction
 from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
 
@@ -37,10 +37,10 @@ class TestTideLevelsNow(TestTideLevelsViewBase):
                    day + 1, day + 2, day + 3]
 
         for minute in minutes:
-            Prediction.objects.create(
-                location=location,
-                datetime=cls.base_time + datetime.timedelta(minutes=minute),
-                tide_level=5
+            create_prediction(
+                location,
+                cls.base_time + datetime.timedelta(minutes=minute),
+                5
             )
 
     def test_that_now_endpoint_returns_http_200_ok(self):

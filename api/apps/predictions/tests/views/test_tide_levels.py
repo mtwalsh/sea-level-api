@@ -1,7 +1,7 @@
 from django.test import TestCase
 from nose.tools import assert_equal, assert_in, assert_not_in
 
-from api.apps.predictions.models import Prediction
+from api.apps.predictions.utils import create_prediction
 from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
 
@@ -104,10 +104,10 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
     def create_lots_of_tide_level_entries(cls):
         location = Location.objects.get(slug='liverpool')
         for minute in range(30 * 60):
-            Prediction.objects.create(
-                location=location,
-                datetime=cls.base_time + datetime.timedelta(minutes=minute),
-                tide_level=5.0
+            create_prediction(
+                location,
+                cls.base_time + datetime.timedelta(minutes=minute),
+                5.0
             )
 
     def test_that_results_are_limited_to_24_hours_1440_records(self):
@@ -130,10 +130,10 @@ class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
     def create_60_entries(cls):
         location = Location.objects.get(slug='liverpool')
         for minute in range(60):
-            Prediction.objects.create(
-                location=location,
-                datetime=cls.base_time + datetime.timedelta(minutes=minute),
-                tide_level=5.0
+            create_prediction(
+                location,
+                cls.base_time + datetime.timedelta(minutes=minute),
+                5.0
             )
 
     def _get_response_for_interval(self, interval_string):
@@ -208,10 +208,10 @@ class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
     def create_unordered_tide_level_entries(cls):
         location = Location.objects.get(slug='liverpool')
         for minute in [0, 4, 2, 3, 1]:
-            Prediction.objects.create(
-                location=location,
-                datetime=cls.base_time + datetime.timedelta(minutes=minute),
-                tide_level=5.0
+            create_prediction(
+                location,
+                cls.base_time + datetime.timedelta(minutes=minute),
+                5.0
             )
 
     def test_that_results_are_ordered_by_datetime(self):

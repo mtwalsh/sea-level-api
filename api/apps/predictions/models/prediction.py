@@ -11,15 +11,13 @@ from api.libs.minute_in_time.models import Minute
 class Prediction(models.Model):
     class Meta:
         app_label = 'predictions'
-        unique_together = ('location', 'datetime')
+        unique_together = ('location', 'minute')
 
     minute = models.ForeignKey(
         Minute,
-        related_name='predictions',
-        blank=True, null=True  # TODO: remove after migrating all predictions
+        related_name='predictions'
     )
 
-    datetime = models.DateTimeField(unique=False)
     location = models.ForeignKey(Location)
 
     tide_level = models.FloatField(
@@ -27,4 +25,4 @@ class Prediction(models.Model):
                   'of the sea level above a known datum.')
 
     def __str__(self):
-        return "{} @ {}".format(self.datetime, self.location.name)
+        return "{}".format(self.tide_level)
