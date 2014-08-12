@@ -15,7 +15,7 @@ from .test_time_parsing import TimeParsingTestMixin
 
 
 class TestTideWindowsViewBase(TestCase):
-    PATH = '/1/predictions/tide-windows/'
+    BASE_PATH = '/1/predictions/tide-windows/'
 
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
@@ -46,7 +46,7 @@ class TestTideWindowsViewBase(TestCase):
         )
 
     def get_tide_windows(self, path):
-        response = self.client.get(self.PATH + path)
+        response = self.client.get(self.BASE_PATH + path)
         data = decode_json(response.content)
         return data['tide_windows']
 
@@ -59,7 +59,7 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
 
     def test_that_missing_tide_level_param_gives_400_error(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = decode_json(response.content)
@@ -70,7 +70,7 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
 
     def test_that_envelope_has_tide_windows_field(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-17T00:00:00Z'
             '&end=2014-06-18T00:00:00Z'
             '&tide_level=10.7')
@@ -79,7 +79,7 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
 
     def test_that_tide_window_records_have_correct_structure(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-17T00:00:00Z'
             '&end=2014-06-18T00:00:00Z'
             '&tide_level=10.7')

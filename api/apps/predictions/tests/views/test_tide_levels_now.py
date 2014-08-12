@@ -45,13 +45,13 @@ class TestTideLevelsNow(TestTideLevelsViewBase):
 
     def test_that_now_endpoint_returns_http_200_ok(self):
         response = self.client.get(
-            self.PATH + 'liverpool/now/')
+            self.BASE_PATH + 'liverpool/now/')
         assert_equal(200, response.status_code)
 
     def test_that_now_searches_from_now_to_24_hours(self):
         with freeze_time("2014-06-01T10:00:00Z"):
             response = self.client.get(
-                self.PATH + 'liverpool/now/')
+                self.BASE_PATH + 'liverpool/now/')
 
         data = decode_json(response.content)
         assert_equal(5, len(data['tide_levels']))
