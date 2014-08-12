@@ -12,10 +12,16 @@ from api.libs.test_utils import decode_json
 
 from .test_location_parsing import LocationParsingTestMixin
 from .test_time_parsing import TimeParsingTestMixin
+from .test_database_queries import SingleDatabaseQueryTestMixin
 
 
 class TestTideWindowsViewBase(TestCase):
     BASE_PATH = '/1/predictions/tide-windows/'
+    EXAMPLE_FULL_PATH = (
+        BASE_PATH + 'liverpool/'
+        '?start=2014-06-17T00:00:00Z'
+        '&end=2014-06-18T00:00:00Z'
+        '&tide_level=10.7')
 
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
@@ -52,7 +58,7 @@ class TestTideWindowsViewBase(TestCase):
 
 
 class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
-                          TimeParsingTestMixin):
+                          TimeParsingTestMixin, SingleDatabaseQueryTestMixin):
     fixtures = TestTideWindowsViewBase.fixtures + [
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
@@ -69,20 +75,12 @@ class TestTideWindowsView(TestTideWindowsViewBase, LocationParsingTestMixin,
             data)
 
     def test_that_envelope_has_tide_windows_field(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-17T00:00:00Z'
-            '&end=2014-06-18T00:00:00Z'
-            '&tide_level=10.7')
+        response = self.client.get(self.EXAMPLE_FULL_PATH)
         data = decode_json(response.content)
         assert_in('tide_windows', data)
 
     def test_that_tide_window_records_have_correct_structure(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-17T00:00:00Z'
-            '&end=2014-06-18T00:00:00Z'
-            '&tide_level=10.7')
+        response = self.client.get(self.EXAMPLE_FULL_PATH)
         data = decode_json(response.content)
         tide_windows = data['tide_windows']
         expected = {
