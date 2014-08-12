@@ -33,7 +33,7 @@ def get_queryset(location, time_range):
     queryset = Prediction.objects.filter(
         location=location,
         minute__datetime__gte=time_range.start,
-        minute__datetime__lt=time_range.end)
+        minute__datetime__lt=time_range.end).select_related('minute')
 
     return queryset.order_by('minute__datetime')
 
