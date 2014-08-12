@@ -7,6 +7,7 @@ from api.libs.test_utils import decode_json
 
 from .test_location_parsing import LocationParsingTestMixin
 from .test_time_parsing import TimeParsingTestMixin
+from .test_database_queries import SingleDatabaseQueryTestMixin
 
 import datetime
 
@@ -14,29 +15,28 @@ import pytz
 
 
 class TestTideLevelsViewBase(TestCase):
-    PATH = '/1/predictions/tide-levels/'
+    BASE_PATH = '/1/predictions/tide-levels/'
+    EXAMPLE_FULL_PATH = (
+        BASE_PATH + 'liverpool/'
+        '?start=2014-06-17T09:00:00Z'
+        '&end=2014-06-17T09:05:00Z')
+
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
 
 class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
-                         TimeParsingTestMixin):
+                         TimeParsingTestMixin, SingleDatabaseQueryTestMixin):
     fixtures = TestTideLevelsViewBase.fixtures + [
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
 
     def test_that_envelope_has_tide_levels_field(self):
-        response = self.client.get(
-            self.PATH + 'liverpool/'
-            '?start=2014-06-17T09:00:00Z'
-            '&end=2014-06-17T09:05:00Z')
+        response = self.client.get(self.EXAMPLE_FULL_PATH)
         data = decode_json(response.content)
         assert_in('tide_levels', data)
 
     def test_that_tide_level_records_have_correct_structure(self):
-        response = self.client.get(
-            self.PATH + 'liverpool/'
-            '?start=2014-06-17T09:00:00Z'
-            '&end=2014-06-17T09:05:00Z')
+        response = self.client.get(self.EXAMPLE_FULL_PATH)
         data = decode_json(response.content)
         tide_levels = data['tide_levels']
         expected = {
@@ -47,7 +47,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
     def test_that_tides_are_given_for_liverpool(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = decode_json(response.content)
@@ -59,7 +59,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
     def test_that_tides_are_given_for_southampton(self):
         response = self.client.get(
-            self.PATH + 'southampton/'
+            self.BASE_PATH + 'southampton/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:05:00Z')
         data = decode_json(response.content)
@@ -71,7 +71,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
     def test_that_the_start_parameter_filters_inclusively(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z' +
             '&end=2014-06-18T09:00:00Z')
         data = decode_json(response.content)
@@ -83,7 +83,7 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
     def test_that_the_end_parameter_filters_exclusively(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-17T09:00:00Z'
             '&end=2014-06-17T09:02:00Z'
         )
@@ -112,7 +112,7 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
 
     def test_that_results_are_limited_to_24_hours_1440_records(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-03T00:00:00Z'
         )
@@ -138,7 +138,7 @@ class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
 
     def _get_response_for_interval(self, interval_string):
         return self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-03T00:00:00Z'
             '&interval={}'.format(interval_string)
@@ -146,7 +146,7 @@ class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
 
     def test_that_default_interval_is_one_minute(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-03T00:00:00Z'
         )
@@ -216,7 +216,7 @@ class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
 
     def test_that_results_are_ordered_by_datetime(self):
         response = self.client.get(
-            self.PATH + 'liverpool/'
+            self.BASE_PATH + 'liverpool/'
             '?start=2014-06-01T00:00:00Z'
             '&end=2014-06-02T00:00:00Z'
         )

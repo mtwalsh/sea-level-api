@@ -7,7 +7,7 @@ class TimeParsingTestMixin(object):
 
     def test_that_no_start_parameter_is_an_error(self):
         response = self.client.get(
-            self.PATH + 'liverpool/?end=2014-01-01T00:00:00Z')
+            self.BASE_PATH + 'liverpool/?end=2014-01-01T00:00:00Z')
         assert_equal(400, response.status_code)
         assert_equal(
             'Missing parameter `start`. Format: 2014-11-30T00:00:00Z',
@@ -15,7 +15,7 @@ class TimeParsingTestMixin(object):
 
     def test_that_no_end_parameter_is_an_error(self):
         response = self.client.get(
-            self.PATH + 'liverpool/?start=2014-01-01T00:00:00Z')
+            self.BASE_PATH + 'liverpool/?start=2014-01-01T00:00:00Z')
         assert_equal(400, response.status_code)
         assert_equal(
             'Missing parameter `end`. Format: 2014-11-30T00:00:00Z',

@@ -61,13 +61,13 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
 
     def test_that_now_endpoint_returns_http_200_ok(self):
         response = self.client.get(
-            self.PATH + 'liverpool/now/?tide_level=4.5')
+            self.BASE_PATH + 'liverpool/now/?tide_level=4.5')
         assert_equal(200, response.status_code)
 
     def test_that_now_searches_from_now_to_24_hours(self):
         with freeze_time("2014-06-01T10:00:00Z"):
             response = self.client.get(
-                self.PATH + 'liverpool/now/?tide_level=4.5')
+                self.BASE_PATH + 'liverpool/now/?tide_level=4.5')
 
         data = decode_json(response.content)
         assert_equal(1, len(data['tide_windows']))
