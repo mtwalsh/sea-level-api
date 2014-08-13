@@ -8,9 +8,6 @@ try:
 except ImportError:
     pass  # Python 3 has zip already
 
-import pytz
-
-from django.conf import settings
 from api.libs.param_parsers import parse_location, parse_time_range
 
 from ..models import Prediction
@@ -83,18 +80,3 @@ def _split_prediction_windows_unfiltered(predictions):
         last_prediction_seen = p1
 
     yield window_start, last_prediction_seen
-
-
-def now_rounded():
-    now = datetime.datetime.now(pytz.UTC).replace(second=0, microsecond=0)
-    return now
-
-
-def format_datetime(dt):
-    """
-    >>> format_datetime(datetime.datetime(2014, 5, 3, 13, 4, 0,\
-                                          tzinfo=pytz.UTC))
-    '2014-05-03T13:04:00Z'
-    """
-    assert dt.tzinfo is not None, dt
-    return dt.strftime(settings.DATETIME_FORMAT)
