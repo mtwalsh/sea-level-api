@@ -117,6 +117,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+SLUG_REGEX = '[a-z0-9-]+'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/

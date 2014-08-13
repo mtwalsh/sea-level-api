@@ -8,17 +8,10 @@ try:
 except ImportError:
     pass  # Python 3 has zip already
 
-import pytz
+from api.libs.param_parsers import parse_location, parse_time_range
 
-from django.core.exceptions import ObjectDoesNotExist
-
-from api.apps.locations.models import Location
 from ..models import Prediction
 
-from .exceptions import (InvalidLocationError, NoStartTimeGivenError,
-                         NoEndTimeGivenError)
-
-DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 TimeRange = namedtuple('TimeRange', 'start,end')
 
@@ -36,39 +29,6 @@ def get_queryset(location, time_range):
         minute__datetime__lt=time_range.end).select_related('minute')
 
     return queryset.order_by('minute__datetime')
-
-
-def parse_location(location_slug):
-    """
-    From a location slug ie 'liverpool-gladstone-dock', return a Location model
-    object or blow up with an appropriate API Exception.
-    """
-    if location_slug is None:
-        raise InvalidLocationError(
-            'No location given, see locations endpoint.')
-
-    try:
-        location = Location.objects.get(slug=location_slug)
-    except ObjectDoesNotExist:
-        raise InvalidLocationError(
-            'Invalid location: "{}". See locations endpoint.'.format(
-                location_slug))
-    return location
-
-
-def parse_time_range(start, end):
-    if start is None:
-        raise NoStartTimeGivenError()
-
-    if end is None:
-        raise NoEndTimeGivenError()
-
-    return TimeRange(start=parse_datetime(start), end=parse_datetime(end))
-
-
-def parse_datetime(datetime_string):
-    return datetime.datetime.strptime(
-        datetime_string, DATETIME_FORMAT).replace(tzinfo=pytz.UTC)
 
 
 def pairwise(iterable):
@@ -120,18 +80,3 @@ def _split_prediction_windows_unfiltered(predictions):
         last_prediction_seen = p1
 
     yield window_start, last_prediction_seen
-
-
-def now_rounded():
-    now = datetime.datetime.now(pytz.UTC).replace(second=0, microsecond=0)
-    return now
-
-
-def format_datetime(dt):
-    """
-    >>> format_datetime(datetime.datetime(2014, 5, 3, 13, 4, 0,\
-                                          tzinfo=pytz.UTC))
-    '2014-05-03T13:04:00Z'
-    """
-    assert dt.tzinfo is not None, dt
-    return dt.strftime(DATETIME_FORMAT)

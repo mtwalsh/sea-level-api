@@ -1,6 +1,5 @@
+from django.conf import settings
 from rest_framework import serializers
-
-from ..views.helpers import DATETIME_FORMAT
 
 
 class TideWindowSerializer(serializers.Serializer):
@@ -14,7 +13,8 @@ class TideWindowSerializer(serializers.Serializer):
     @staticmethod
     def _serialize_prediction(prediction):
         return {
-            'datetime': prediction.minute.datetime.strftime(DATETIME_FORMAT),
+            'datetime': prediction.minute.datetime.strftime(
+                settings.DATETIME_FORMAT),
             'tide_level': prediction.tide_level
         }
 

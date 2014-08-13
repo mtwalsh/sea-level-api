@@ -2,12 +2,13 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.core.validators import RegexValidator
+from django.conf import settings
 
 from django.utils.encoding import python_2_unicode_compatible
 
 
 STRICT_SLUG_VALIDATOR = RegexValidator(
-    r'^[0-9a-z-]+$',
+    r'^' + settings.SLUG_REGEX + '$',
     'Only lowercase alphanumeric characters and hyphens are allowed.')
 
 
