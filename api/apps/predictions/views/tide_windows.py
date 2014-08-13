@@ -12,13 +12,13 @@ except ImportError:
 from rest_framework.generics import ListAPIView
 
 from api.libs.json_envelope_renderer import replace_json_renderer
+from api.libs.param_parsers import (parse_location, parse_time_range,
+                                    parse_tide_level)
 
 from ..models import Prediction
 from ..serializers import TideWindowSerializer
 
-from .helpers import (parse_location, parse_time_range, get_queryset,
-                      split_prediction_windows, TimeRange)
-from .exceptions import MissingParameterException
+from .helpers import (get_queryset, split_prediction_windows, TimeRange)
 
 
 ONE_DAY = datetime.timedelta(hours=24)
@@ -43,11 +43,8 @@ class TideWindows(ListAPIView):
             query_params.get('end', None)
         )
 
-        try:
-            min_tide_level = float(self.request.QUERY_PARAMS['tide_level'])
-        except KeyError:
-            raise MissingParameterException(
-                'Missing required query parameter `tide_level`')
+        min_tide_level = parse_tide_level(
+            self.request.QUERY_PARAMS.get('tide_level'))
 
         extended_time_range = TimeRange(
             start=time_range.start - ONE_DAY,
