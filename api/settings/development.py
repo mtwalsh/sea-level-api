@@ -17,6 +17,10 @@ if DATABASES is None:
         }
     }
 
+INSTALLED_APPS += (
+    'debug_toolbar.apps.DebugToolbarConfig',
+)
+
 LOG_DIR = pjoin(BASE_DIR, '..', 'log')
 
 LOGGING = {
