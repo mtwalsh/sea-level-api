@@ -31,7 +31,9 @@ class TestAPIRootView(TestCase):
         expected_paths = [
             '/1/locations/',
             '/1/predictions/tide-levels/',
-            '/1/predictions/tide-windows/']
+            '/1/predictions/tide-windows/',
+            '/1/sea-levels/',
+        ]
 
         assert_equal(
             set([self.expand_path(p) for p in expected_paths]),

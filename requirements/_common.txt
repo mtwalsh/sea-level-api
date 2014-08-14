@@ -11,3 +11,4 @@ lxml==3.3.5
 backoff==1.0.3
 requests==2.3.0
 django-debug-toolbar==1.2.1
+sqlparse==0.1.11
