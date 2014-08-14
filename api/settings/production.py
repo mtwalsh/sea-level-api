@@ -9,6 +9,11 @@ if os.environ.get('EMERGENCY_DEBUG', 'false') == 'true':
     DEBUG = True
     TEMPLATE_DEBUG = True
     INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)
-    INTERNAL_IPS = filter(
-        None,
-        os.environ.get('INTERNAL_IPS', '').split(','))
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK':
+        'api.settings.production.show_toolbar_callback'
+    }
+
+
+def show_toolbar_callback(request):
+    return DEBUG is True
