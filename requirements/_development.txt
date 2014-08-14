@@ -1,3 +1,2 @@
 -r _testing.txt
 
-django-debug-toolbar
