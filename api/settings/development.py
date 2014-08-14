@@ -19,6 +19,7 @@ if DATABASES is None:
 
 INSTALLED_APPS += (
     'debug_toolbar.apps.DebugToolbarConfig',
+    'django_extensions',
 )
 
 LOG_DIR = pjoin(BASE_DIR, '..', 'log')
