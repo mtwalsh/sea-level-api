@@ -9,3 +9,6 @@ if os.environ.get('EMERGENCY_DEBUG', 'false') == 'true':
     DEBUG = True
     TEMPLATE_DEBUG = True
     INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)
+    INTERNAL_IPS = filter(
+        None,
+        os.environ.get('INTERNAL_IPS', '').split(','))
