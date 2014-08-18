@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from api.apps.ea_sea_levels.models import Station, Measurement
 
-from api.libs.ea_measurement_collector import download_latest_measurement
+from api.libs.ea_measurement_collector import download_recent_measurements
 
 
 class Command(BaseCommand):
@@ -13,13 +13,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for station in Station.objects.all():
-            self.stdout.write("Getting measurement for {}".format(station))
-            result = download_latest_measurement(
-                station.station_id)
-
-        validate_datum(result.datum, station.site_datum)
-        validate_station(result.station_id, station.station_id)
-        self.record_measurement(station, result)
+            self.stdout.write("Getting measurement(s) for {}".format(station))
+            for result in download_recent_measurements(station.station_id):
+                validate_datum(result.datum, station.site_datum)
+                validate_station(result.station_id, station.station_id)
+                self.record_measurement(station, result)
 
     def record_measurement(self, station, result):
         self.stdout.write("parse result: {}".format(result))
