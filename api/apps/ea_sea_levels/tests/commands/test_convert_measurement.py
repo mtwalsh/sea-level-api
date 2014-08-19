@@ -59,6 +59,23 @@ class TestUpdateObservations(TestCase):
         assert_equal(self.datetime_1, observations[0].minute.datetime)
         assert_equal(self.datetime_2, list(observations)[-1].minute.datetime)
 
+    def test_two_measurements_inserted_in_reverse_order_does_conversions(self):
+        Measurement.objects.create(
+            station=self.station,
+            datetime=self.datetime_2,
+            measurement=10)
+
+        Measurement.objects.create(
+            station=self.station,
+            datetime=self.datetime_1,
+            measurement=5)
+
+        update_observations(self.station, sys.stdout)
+        observations = Observation.objects.all()
+        assert_equal(16, observations.count())
+        assert_equal(self.datetime_1, observations[0].minute.datetime)
+        assert_equal(self.datetime_2, list(observations)[-1].minute.datetime)
+
     def test_that_conversions_are_correct_with_4_93_offset(self):
         self.make_two_measurements()
         update_observations(self.station, sys.stdout)
