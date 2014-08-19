@@ -8,6 +8,7 @@ from .station import Station
 class Measurement(models.Model):
     class Meta:
         app_label = 'ea_sea_levels'
+        ordering = ('station', 'datetime')
 
     station = models.ForeignKey(Station, related_name='measurements')
     datetime = models.DateTimeField(
