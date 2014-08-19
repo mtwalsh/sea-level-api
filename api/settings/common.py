@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'api.apps.ea_sea_levels',
     'api.apps.observations',
     'api.apps.sea_levels',
+    'api.apps.status',
 
     'api.libs.minute_in_time',
 )
