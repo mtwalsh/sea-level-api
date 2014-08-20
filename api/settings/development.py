@@ -1,5 +1,6 @@
 from .common import *
 
+import getpass
 from os.path import join as pjoin
 
 if SECRET_KEY is None:
@@ -9,11 +10,11 @@ if 'true' == os.environ.get('DEBUG', 'true'):  # default on but allow disabling
     DEBUG = TEMPLATE_DEBUG = True  # SECURITY WARNING: insecure! leaks secrets.
 
 if DATABASES is None:
-    print("Using SQLite database.")
+    my_username = getpass.getuser()
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': my_username,
         }
     }
 
