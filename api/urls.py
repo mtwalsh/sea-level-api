@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'^1/predictions/', include('api.apps.predictions.urls')),
 
     url(r'^1/sea-levels/', include('api.apps.sea_levels.urls')),
+
+    url(r'^1/_status/', include('api.apps.status.urls')),
 ]
