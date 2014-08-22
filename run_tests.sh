@@ -41,7 +41,19 @@ function run_python_unit_tests {
     python manage.py test --failfast -v 3
 }
 
+function test_that_no_models_need_migrations {
+    OUTPUT=$(python manage.py makemigrations --dry-run)
+    if [[ "${OUTPUT}" != *"No changes detected"* ]] ; then
+        echo
+        echo 'ERROR: Some models need migrations!'
+        echo
+        python manage.py makemigrations --dry-run
+        exit 2
+    fi
+}
+
 nuke_pyc_files
 run_pep8_style_checks
 run_python_unit_tests
 run_more_pep8_checks
+test_that_no_models_need_migrations
