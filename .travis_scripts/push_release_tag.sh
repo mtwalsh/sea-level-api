@@ -90,6 +90,7 @@ function make_release_tag_from_travis_build_number {
   git push origin --tags --quiet
 
   git tag --force "${RELEASE_BRANCH_NAME}"
+  git push origin --delete "${RELEASE_BRANCH_NAME}" --quiet
   git push --force origin --tags --quiet
 
   popd
