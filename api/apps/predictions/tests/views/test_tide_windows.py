@@ -6,8 +6,10 @@ from django.test import TestCase
 
 from nose.tools import assert_equal, assert_in
 
+from api.apps.predictions.models import Prediction
 from api.apps.predictions.utils import create_prediction
 from api.apps.locations.models import Location
+from api.libs.minute_in_time.models import Minute
 from api.libs.test_utils import decode_json
 
 from .test_location_parsing import LocationParsingTestMixin
@@ -40,6 +42,26 @@ class TestTideWindowsViewBase(TestCase):
                 cls.base_time + datetime.timedelta(minutes=minute),
                 level
             )
+
+    @classmethod
+    def bulk_create_predictions(cls, minutes_and_levels):
+        """
+        There must not be any overlapping Minute objects.
+        """
+        minutes_and_levels = list(minutes_and_levels)
+        Minute.objects.bulk_create(
+            Minute(datetime=cls.to_datetime(m)) for m, _ in minutes_and_levels)
+
+        minute_cache = {m.datetime: m for m in Minute.objects.all()}
+        Prediction.objects.bulk_create(
+            Prediction(location=cls.location,
+                       minute=minute_cache[cls.to_datetime(m)],
+                       tide_level=l)
+            for m, l in minutes_and_levels)
+
+    @classmethod
+    def to_datetime(cls, num_minutes):
+        return cls.base_time + datetime.timedelta(minutes=num_minutes)
 
     @staticmethod
     def parse_window(data):
@@ -286,7 +308,7 @@ class TestTideWindowsExtendingLongPastStart(TestTideWindowsViewBase):
         #
         # expected:       ^  ^
 
-        self.create_predictions(
+        self.bulk_create_predictions(
             (minute, 6) for minute in range(-25 * 60, 0, 1))
 
         self.create_predictions([
@@ -327,7 +349,7 @@ class TestTideWindowsExtendingLongPastEnd(TestTideWindowsViewBase):
             (4, 6),
         ])
 
-        self.create_predictions(
+        self.bulk_create_predictions(
             (minute, 6) for minute in range(5, 5 + 25 * 600, 1))
         tide_windows = self.get_tide_windows(
             'liverpool/'
@@ -349,7 +371,7 @@ class TestTideWindowsExtendingLongPastStartAndEnd(TestTideWindowsViewBase):
         #
         # expected:       ^          ^
 
-        self.create_predictions(
+        self.bulk_create_predictions(
             (minute, 6) for minute in range(-25 * 600, 5 + 25 * 600, 1))
         tide_windows = self.get_tide_windows(
             'liverpool/'
