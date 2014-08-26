@@ -10,7 +10,7 @@ except ImportError:
 
 from api.libs.param_parsers import parse_location, parse_time_range
 
-from ..models import Prediction
+from ..models import TidePrediction
 
 
 TimeRange = namedtuple('TimeRange', 'start,end')
@@ -23,7 +23,7 @@ def parse_and_get_queryset(location_slug, start_param, end_param):
 
 
 def get_queryset(location, time_range):
-    queryset = Prediction.objects.filter(
+    queryset = TidePrediction.objects.filter(
         location=location,
         minute__datetime__gte=time_range.start,
         minute__datetime__lt=time_range.end).select_related('minute')
@@ -75,7 +75,7 @@ def _split_prediction_windows_unfiltered(predictions):
             window_start = p1
 
         elif p0.minute.datetime >= p1.minute.datetime:
-            raise ValueError("Predictions must be ordered and ascending.")
+            raise ValueError("TidePredictions must be ordered and ascending.")
 
         last_prediction_seen = p1
 

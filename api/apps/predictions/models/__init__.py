@@ -1,1 +1,1 @@
-from .prediction import Prediction
+from .tide_prediction import TidePrediction

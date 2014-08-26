@@ -8,7 +8,7 @@ from api.libs.minute_in_time.models import Minute
 
 
 @python_2_unicode_compatible
-class Prediction(models.Model):
+class TidePrediction(models.Model):
     class Meta:
         app_label = 'predictions'
         unique_together = ('location', 'minute')

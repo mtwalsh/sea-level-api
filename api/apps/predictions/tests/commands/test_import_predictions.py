@@ -8,8 +8,8 @@ from django.test import TestCase
 from nose.tools import assert_equal
 
 from api.apps.locations.models import Location
-from api.apps.predictions.models import Prediction
-from api.apps.predictions.utils import create_prediction
+from api.apps.predictions.models import TidePrediction
+from api.apps.predictions.utils import create_tide_prediction
 
 from api.apps.predictions.management.commands.import_predictions import (
     do_load_predictions, delete_existing_predictions)
@@ -20,7 +20,7 @@ except ImportError:
     from cStringIO import StringIO  # Python 2
 
 
-class TestImportPredictionsCommand(TestCase):
+class TestImportTidePredictionsCommand(TestCase):
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
     TEST_CSV = ('datetime,predicted_height\n'
@@ -56,12 +56,12 @@ class TestImportPredictionsCommand(TestCase):
                 'tide_level': 8.56
             }
         ],
-            [self._serialize(p) for p in Prediction.objects.all()]
+            [self._serialize(p) for p in TidePrediction.objects.all()]
         )
 
     def test_load_predictions_can_update_existing_prediction(self):
         dt = datetime.datetime(2014, 6, 1, 0, 0, tzinfo=pytz.UTC)
-        create_prediction(self.liverpool, dt, 8.0)
+        create_tide_prediction(self.liverpool, dt, 8.0)
         do_load_predictions(self.liverpool, self.csv_fobj)
         assert_equal(
             {
@@ -70,10 +70,10 @@ class TestImportPredictionsCommand(TestCase):
                 'location': 'liverpool',
                 'tide_level': 8.55
             },
-            self._serialize(Prediction.objects.get(minute__datetime=dt)))
+            self._serialize(TidePrediction.objects.get(minute__datetime=dt)))
 
 
-class TestDeleteExistingPredictions(TestCase):
+class TestDeleteExistingTidePredictions(TestCase):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
     ]
@@ -88,7 +88,7 @@ class TestDeleteExistingPredictions(TestCase):
         for location in (cls.liv, cls.south):
             for minute in range(10):
                 dt = cls.datetime + datetime.timedelta(minutes=minute)
-                create_prediction(location, dt, 10.0)
+                create_tide_prediction(location, dt, 10.0)
 
     def test_that_only_the_given_location_is_deleted(self):
         delete_existing_predictions(
@@ -96,8 +96,12 @@ class TestDeleteExistingPredictions(TestCase):
             self.datetime - datetime.timedelta(hours=1),
             self.datetime + datetime.timedelta(hours=1))
 
-        assert_equal(0, len(Prediction.objects.filter(location=self.liv)))
-        assert_equal(10, len(Prediction.objects.filter(location=self.south)))
+        assert_equal(
+            0,
+            len(TidePrediction.objects.filter(location=self.liv)))
+        assert_equal(
+            10,
+            len(TidePrediction.objects.filter(location=self.south)))
 
     def test_that_predictions_arent_deleted_before_start_datetime(self):
         distant_future = self.datetime + datetime.timedelta(hours=1)
@@ -106,7 +110,8 @@ class TestDeleteExistingPredictions(TestCase):
             self.datetime + datetime.timedelta(minutes=3),  # 4th: 13:03
             distant_future)
 
-        remaining_predictions = Prediction.objects.filter(location=self.liv)
+        remaining_predictions = TidePrediction.objects.filter(
+            location=self.liv)
         assert_equal(3, remaining_predictions.count())
         assert_equal(
             self.datetime + datetime.timedelta(minutes=2),
@@ -119,7 +124,8 @@ class TestDeleteExistingPredictions(TestCase):
             distant_past,
             self.datetime + datetime.timedelta(minutes=4))
 
-        remaining_predictions = Prediction.objects.filter(location=self.liv)
+        remaining_predictions = TidePrediction.objects.filter(
+            location=self.liv)
         assert_equal(5, remaining_predictions.count())
         assert_equal(
             self.datetime + datetime.timedelta(minutes=5),
