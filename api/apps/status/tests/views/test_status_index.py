@@ -9,8 +9,8 @@ from nose.tools import assert_equal
 
 from api.apps.observations.models import Observation
 from api.apps.observations.utils import create_observation
-from api.apps.predictions.models import Prediction
-from api.apps.predictions.utils import create_prediction
+from api.apps.predictions.models import TidePrediction
+from api.apps.predictions.utils import create_tide_prediction
 
 from api.apps.locations.models import Location
 
@@ -27,7 +27,7 @@ class TestStatusIndexView(TestCase):
             2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 
     def _setup_all_ok(self):
-        create_prediction(
+        create_tide_prediction(
             self.liv,
             self.base_time + datetime.timedelta(days=31),
             5.0)
@@ -38,7 +38,7 @@ class TestStatusIndexView(TestCase):
             True)
 
     def _setup_not_ok(self):
-        Prediction.objects.all().delete()
+        TidePrediction.objects.all().delete()
         Observation.objects.all().delete()
 
     def test_that_status_page_has_api_status_ok_when_all_ok(self):
@@ -66,7 +66,7 @@ class TestCheckBase(TestCase):
 
 class TestCheckTidePredictions(TestCheckBase):
     def test_that_tide_predictions_further_than_one_month_is_ok(self):
-        create_prediction(
+        create_tide_prediction(
             self.liverpool,
             self.base_time + datetime.timedelta(days=31),
             10.0)
@@ -78,7 +78,7 @@ class TestCheckTidePredictions(TestCheckBase):
         assert_equal('OK', text)
 
     def test_that_tide_predictions_less_than_one_month_not_ok(self):
-        create_prediction(
+        create_tide_prediction(
             self.liverpool,
             self.base_time + datetime.timedelta(days=29),
             10.0)
@@ -90,7 +90,7 @@ class TestCheckTidePredictions(TestCheckBase):
         assert_equal('< 30 days left', text)
 
     def test_that_predictions_for_liverpool_dont_affect_southampton(self):
-        create_prediction(
+        create_tide_prediction(
             self.liverpool,
             self.base_time + datetime.timedelta(days=31),
             10.0)

@@ -6,8 +6,8 @@ from django.test import TestCase
 
 from nose.tools import assert_equal, assert_in
 
-from api.apps.predictions.models import Prediction
-from api.apps.predictions.utils import create_prediction
+from api.apps.predictions.models import TidePrediction
+from api.apps.predictions.utils import create_tide_prediction
 from api.apps.locations.models import Location
 from api.libs.minute_in_time.models import Minute
 from api.libs.test_utils import decode_json
@@ -37,7 +37,7 @@ class TestTideWindowsViewBase(TestCase):
     @classmethod
     def create_predictions(cls, minutes_and_levels):
         for minute, level in minutes_and_levels:
-            create_prediction(
+            create_tide_prediction(
                 cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 level
@@ -53,10 +53,10 @@ class TestTideWindowsViewBase(TestCase):
             Minute(datetime=cls.to_datetime(m)) for m, _ in minutes_and_levels)
 
         minute_cache = {m.datetime: m for m in Minute.objects.all()}
-        Prediction.objects.bulk_create(
-            Prediction(location=cls.location,
-                       minute=minute_cache[cls.to_datetime(m)],
-                       tide_level=l)
+        TidePrediction.objects.bulk_create(
+            TidePrediction(location=cls.location,
+                           minute=minute_cache[cls.to_datetime(m)],
+                           tide_level=l)
             for m, l in minutes_and_levels)
 
     @classmethod

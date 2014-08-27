@@ -7,7 +7,7 @@ from django.shortcuts import render
 from collections import namedtuple
 
 from api.apps.locations.models import Location
-from api.apps.predictions.models import Prediction
+from api.apps.predictions.models import TidePrediction
 from api.apps.observations.models import Observation
 
 
@@ -65,7 +65,7 @@ def check_tide_predictions(location):
     one_month_away = (datetime.datetime.now(pytz.UTC)
                       + datetime.timedelta(days=30))
 
-    ok = Prediction.objects.filter(
+    ok = TidePrediction.objects.filter(
         location=location,
         minute__datetime__gte=one_month_away).exists()
 

@@ -4,13 +4,13 @@ import pytz
 from django.test import TestCase
 from nose.tools import assert_equal
 
-from api.apps.predictions.models import Prediction
-from api.apps.predictions.utils import create_prediction
+from api.apps.predictions.models import TidePrediction
+from api.apps.predictions.utils import create_tide_prediction
 from api.libs.minute_in_time.models import Minute
 from api.apps.locations.models import Location
 
 
-class TestCreatePrediction(TestCase):
+class TestCreateTidePrediction(TestCase):
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
     @classmethod
@@ -22,23 +22,23 @@ class TestCreatePrediction(TestCase):
 
     def test_that_prediction_can_be_created_when_minute_already_exists(self):
         Minute.objects.create(datetime=self.datetime)
-        create_prediction(self.liverpool, self.datetime, 123.45)
-        assert_equal(123.45, Prediction.objects.get().tide_level)
+        create_tide_prediction(self.liverpool, self.datetime, 123.45)
+        assert_equal(123.45, TidePrediction.objects.get().tide_level)
 
     def test_that_prediction_can_be_created_when_minute_doesnt_exist(self):
-        create_prediction(self.liverpool, self.datetime, 123.45)
-        assert_equal(123.45, Prediction.objects.get().tide_level)
+        create_tide_prediction(self.liverpool, self.datetime, 123.45)
+        assert_equal(123.45, TidePrediction.objects.get().tide_level)
 
     def test_that_prediction_can_be_updated_when_minute_already_exists(self):
         Minute.objects.create(datetime=self.datetime)
 
-        create_prediction(self.liverpool, self.datetime, 123.45)
-        create_prediction(self.liverpool, self.datetime, 45.67)
+        create_tide_prediction(self.liverpool, self.datetime, 123.45)
+        create_tide_prediction(self.liverpool, self.datetime, 45.67)
 
-        assert_equal(45.67, Prediction.objects.get().tide_level)
+        assert_equal(45.67, TidePrediction.objects.get().tide_level)
 
     def test_that_prediction_can_be_updated_when_minute_doesnt_exist(self):
-        create_prediction(self.liverpool, self.datetime, 123.45)
-        create_prediction(self.liverpool, self.datetime, 45.67)
+        create_tide_prediction(self.liverpool, self.datetime, 123.45)
+        create_tide_prediction(self.liverpool, self.datetime, 45.67)
 
-        assert_equal(45.67, Prediction.objects.get().tide_level)
+        assert_equal(45.67, TidePrediction.objects.get().tide_level)

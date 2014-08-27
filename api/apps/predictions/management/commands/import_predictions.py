@@ -6,7 +6,7 @@ import pytz
 from batcher import batcher
 
 from django_docopt_command import DocOptCommand
-from api.apps.predictions.models import Prediction
+from api.apps.predictions.models import TidePrediction
 from api.apps.locations.models import Location
 from api.libs.minute_in_time.models import Minute
 
@@ -66,7 +66,7 @@ def delete_existing_predictions(location_obj, start, end):
         location_obj, start, end))
     assert isinstance(start, datetime.datetime), start
     assert isinstance(end, datetime.datetime), end
-    Prediction.objects.filter(
+    TidePrediction.objects.filter(
         location=location_obj,
         minute__datetime__gte=start,
         minute__datetime__lte=end).delete()
@@ -78,15 +78,15 @@ def make_minutes_hash(start, end):
 
 
 def create_predictions(f, location_obj, minutes_hash):
-    print("Creating Predictions")
+    print("Creating TidePredictions")
     count = 0
-    with batcher(Prediction.objects.bulk_create, 999) as b:
+    with batcher(TidePrediction.objects.bulk_create, 999) as b:
         for row in csv.DictReader(f):
             count += 1
             if 0 == (count % 1000):
                 print(str(count))
 
-            b.push(Prediction(
+            b.push(TidePrediction(
                 location=location_obj,
                 minute=minutes_hash[parse_datetime(row['datetime'])],
                 tide_level=float(row['predicted_height'])))

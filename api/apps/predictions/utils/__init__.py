@@ -1,1 +1,1 @@
-from .create_prediction import create_prediction
+from .create_tide_prediction import create_tide_prediction

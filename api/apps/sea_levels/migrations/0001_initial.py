@@ -29,6 +29,9 @@ DROP VIEW IF EXISTS sea_levels_combinedpredictionobservation;
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('predictions', '0004_auto_20140806_1721'),
+        ('observations', '0001_initial'),
+        ('minute_in_time', '0001_initial'),
     ]
 
     operations = [

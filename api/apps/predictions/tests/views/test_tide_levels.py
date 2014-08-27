@@ -1,7 +1,7 @@
 from django.test import TestCase
 from nose.tools import assert_equal, assert_in, assert_not_in
 
-from api.apps.predictions.utils import create_prediction
+from api.apps.predictions.utils import create_tide_prediction
 from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
 
@@ -104,7 +104,7 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
     def create_lots_of_tide_level_entries(cls):
         location = Location.objects.get(slug='liverpool')
         for minute in range(30 * 60):
-            create_prediction(
+            create_tide_prediction(
                 location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
@@ -130,7 +130,7 @@ class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
     def create_60_entries(cls):
         location = Location.objects.get(slug='liverpool')
         for minute in range(60):
-            create_prediction(
+            create_tide_prediction(
                 location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
@@ -208,7 +208,7 @@ class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
     def create_unordered_tide_level_entries(cls):
         location = Location.objects.get(slug='liverpool')
         for minute in [0, 4, 2, 3, 1]:
-            create_prediction(
+            create_tide_prediction(
                 location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0

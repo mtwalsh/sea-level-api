@@ -15,7 +15,7 @@ from api.libs.json_envelope_renderer import replace_json_renderer
 from api.libs.param_parsers import (parse_location, parse_time_range,
                                     parse_tide_level)
 
-from ..models import Prediction
+from ..models import TidePrediction
 from ..serializers import TideWindowSerializer
 
 from .helpers import (get_queryset, split_prediction_windows, TimeRange)
@@ -78,11 +78,11 @@ class TimeWindow(object):
                 and self.end_prediction.minute.datetime >= time_range.start)
 
     def truncate_end(self, to_datetime):
-        self.end_prediction = Prediction.objects.get(
+        self.end_prediction = TidePrediction.objects.get(
             minute__datetime=to_datetime)
 
     def truncate_start(self, to_datetime):
-        self.start_prediction = Prediction.objects.get(
+        self.start_prediction = TidePrediction.objects.get(
             minute__datetime=to_datetime)
 
     def extends_after(self, when):
