@@ -15,6 +15,8 @@ class CombinedPredictionObservation(models.Model):
     datetime = models.DateTimeField(primary_key=True)
     location = models.ForeignKey(Location, null=False)
     predicted_tide_level = models.FloatField(null=False)
+    predicted_surge_level = models.FloatField(null=False)
+    predicted_sea_level = models.FloatField(null=False)
     observed_sea_level = models.FloatField(null=True)
     derived_surge_level = models.FloatField(null=True)
 
