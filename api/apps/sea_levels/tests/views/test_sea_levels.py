@@ -20,6 +20,12 @@ class TestSeaLevelsViewBase(TestCase):
 
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
+    def _get(self, start, end, location='liverpool'):
+        response = self.client.get(
+            self.BASE_PATH + '{}/?start={}&end={}'.format(location, start, end)
+        )
+        return decode_json(response.content)['sea_levels']
+
 
 class TestSeaLevelsView(TestSeaLevelsViewBase):
     fixtures = TestSeaLevelsViewBase.fixtures + [
@@ -44,51 +50,32 @@ class TestSeaLevelsView(TestSeaLevelsViewBase):
         assert_equal(expected, sea_levels[0])
 
     def test_that_tides_are_given_for_liverpool(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-17T09:00:00Z'
-            '&end=2014-06-17T09:05:00Z')
-        data = decode_json(response.content)
-        sea_levels = data['sea_levels']
+        sea_levels = self._get('2014-06-17T09:00:00Z', '2014-06-17T09:05:00Z')
         assert_equal(
             [10.3, 10.8, 10.9],  # Liverpool values
             [t['predicted_tide_level'] for t in sea_levels]
         )
 
     def test_that_tides_are_given_for_southampton(self):
-        response = self.client.get(
-            self.BASE_PATH + 'southampton/'
-            '?start=2014-06-17T09:00:00Z'
-            '&end=2014-06-17T09:05:00Z')
-        data = decode_json(response.content)
-        sea_levels = data['sea_levels']
+        sea_levels = self._get('2014-06-17T09:00:00Z', '2014-06-17T09:05:00Z',
+                               'southampton')
         assert_equal(
             [4.0, 4.3, 4.1],  # Southampton values
             [t['predicted_tide_level'] for t in sea_levels]
         )
 
     def test_that_the_start_parameter_filters_inclusively(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-17T09:00:00Z' +
-            '&end=2014-06-18T09:00:00Z')
-        data = decode_json(response.content)
-
+        sea_levels = self._get('2014-06-17T09:00:00Z', '2014-06-18T09:00:00Z')
         assert_in(
             '2014-06-17T09:00:00Z',
-            [t['datetime'] for t in data['sea_levels']]
+            [t['datetime'] for t in sea_levels]
         )
 
     def test_that_the_end_parameter_filters_exclusively(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-17T09:00:00Z'
-            '&end=2014-06-17T09:02:00Z'
-        )
-        data = decode_json(response.content)
+        sea_levels = self._get('2014-06-17T09:00:00Z', '2014-06-17T09:02:00Z')
         assert_not_in(
             '2014-06-17T09:02:00Z',
-            [t['datetime'] for t in data['sea_levels']]
+            [t['datetime'] for t in sea_levels]
         )
 
 
@@ -111,26 +98,28 @@ class TestSeaLevelsViewShowsObservations(TestSeaLevelsViewBase):
             4.8, True)
 
     def test_that_observed_sea_level_is_null_when_not_present(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-01T10:00:00Z'
-            '&end=2014-06-17T11:00:00Z'
-        )
-        data = decode_json(response.content)
+        sea_levels = self._get('2014-06-01T10:30:00Z', '2014-06-17T10:31:00Z')
         assert_equal(
-            [None, 4.8, None],
-            [s['observed_sea_level'] for s in data['sea_levels']])
+            None,
+            sea_levels[0]['observed_sea_level'])
 
     def test_that_derived_surge_level_is_null_when_not_present(self):
-        response = self.client.get(
-            self.BASE_PATH + 'liverpool/'
-            '?start=2014-06-01T10:00:00Z'
-            '&end=2014-06-17T11:00:00Z'
-        )
-        data = decode_json(response.content)
+        sea_levels = self._get('2014-06-01T10:30:00Z', '2014-06-17T10:31:00Z')
         assert_equal(
-            [None, -0.3, None],
-            [s['derived_surge_level'] for s in data['sea_levels']])
+            None,
+            sea_levels[0]['derived_surge_level'])
+
+    def test_that_observed_sea_level_is_correct_when_present(self):
+        sea_levels = self._get('2014-06-01T10:31:00Z', '2014-06-17T10:32:00Z')
+        assert_equal(
+            4.8,
+            sea_levels[0]['observed_sea_level'])
+
+    def test_that_derived_surge_level_is_calculated_correctly(self):
+        sea_levels = self._get('2014-06-01T10:31:00Z', '2014-06-17T10:32:00Z')
+        assert_equal(
+            -0.3,  # tide=5.1, observation=4.8
+            sea_levels[0]['derived_surge_level'])
 
 
 class TestSeaLevelsViewLimitingQueries(TestSeaLevelsViewBase):
