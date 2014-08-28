@@ -1,7 +1,8 @@
 from django.test import TestCase
 from nose.tools import assert_equal, assert_in, assert_not_in
 
-from api.apps.predictions.utils import create_tide_prediction
+from api.apps.predictions.utils import (
+    create_tide_prediction, create_surge_prediction)
 from api.apps.observations.utils import create_observation
 from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
@@ -44,6 +45,8 @@ class TestSeaLevelsView(TestSeaLevelsViewBase):
         expected = {
             'datetime': '2014-06-17T09:00:00Z',
             'predicted_tide_level': 10.3,
+            'predicted_surge_level': None,
+            'predicted_sea_level': None,
             'observed_sea_level': None,
             'derived_surge_level': None,
         }
@@ -120,6 +123,49 @@ class TestSeaLevelsViewShowsObservations(TestSeaLevelsViewBase):
         assert_equal(
             -0.3,  # tide=5.1, observation=4.8
             sea_levels[0]['derived_surge_level'])
+
+
+class TestSeaLevelsViewShowsSurgePredictions(TestSeaLevelsViewBase):
+
+    @classmethod
+    def setUp(cls):
+        base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
+        location = Location.objects.get(slug='liverpool')
+        for minute, tide_level in [(0, 5.0), (1, 5.1), (2, 5.2)]:
+            create_tide_prediction(
+                location,
+                base_time + datetime.timedelta(minutes=minute),
+                tide_level
+            )
+
+        create_surge_prediction(
+            location,
+            base_time + datetime.timedelta(minutes=1),
+            0.15)
+
+    def test_that_predicted_surge_level_is_null_when_not_present(self):
+        sea_levels = self._get('2014-06-01T10:30:00Z', '2014-06-17T10:31:00Z')
+        assert_equal(
+            None,
+            sea_levels[0]['predicted_surge_level'])
+
+    def test_that_predicted_sea_level_is_null_when_not_present(self):
+        sea_levels = self._get('2014-06-01T10:30:00Z', '2014-06-17T10:31:00Z')
+        assert_equal(
+            None,
+            sea_levels[0]['predicted_sea_level'])
+
+    def test_that_predicted_surge_level_is_correct_when_present(self):
+        sea_levels = self._get('2014-06-01T10:31:00Z', '2014-06-17T10:32:00Z')
+        assert_equal(
+            0.15,
+            sea_levels[0]['predicted_surge_level'])
+
+    def test_that_predicted_sea_level_is_calculated_correctly(self):
+        sea_levels = self._get('2014-06-01T10:31:00Z', '2014-06-17T10:32:00Z')
+        assert_equal(
+            5.25,  # 5.1 tide + 0.15 surge
+            sea_levels[0]['predicted_sea_level'])
 
 
 class TestSeaLevelsViewLimitingQueries(TestSeaLevelsViewBase):
