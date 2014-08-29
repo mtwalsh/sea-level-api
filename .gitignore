@@ -3,4 +3,4 @@
 
 api/static_collected/*
 
-log/*.log
+log/*.log*
