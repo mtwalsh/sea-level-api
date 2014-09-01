@@ -7,7 +7,7 @@ from django.shortcuts import render
 from collections import namedtuple
 
 from api.apps.locations.models import Location
-from api.apps.predictions.models import TidePrediction
+from api.apps.predictions.models import TidePrediction, SurgePrediction
 from api.apps.observations.models import Observation
 
 
@@ -76,7 +76,23 @@ def check_tide_predictions(location):
 
 
 def check_surge_predictions(location):
-    return (True, '(Not yet implemented)')
+    """
+    Test that we have a surge prediction for every minute in the next 12 hours.
+    """
+    now = datetime.datetime.now(pytz.UTC)
+    twelve_hours_away = now + datetime.timedelta(hours=12)
+
+    count = SurgePrediction.objects.filter(
+        location=location,
+        minute__datetime__gte=now,
+        minute__datetime__lt=twelve_hours_away).count()
+    ok = (12 * 60) == count
+
+    if ok:
+        return (True, 'OK')
+    else:
+        return (False,
+                'Missing data for next 12 hours: {} vs 720'.format(count))
 
 
 def check_observations(location):
