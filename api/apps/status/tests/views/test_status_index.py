@@ -22,37 +22,48 @@ from api.apps.status.views.status_index import (
 BASE_TIME = datetime.datetime(2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 
 
-class MakeSurgePredictionsMixin(object):
-    def _make_good_surge_predictions(self):
-        liverpool, _ = Location.objects.get_or_create(
-            slug='liverpool', name='Liverpool')
+def _make_good_surge_predictions():
+    liverpool, _ = _setup_locations()
 
-        for minute in range((12 * 60) + 10):
-            create_surge_prediction(
-                liverpool,
-                BASE_TIME + datetime.timedelta(minutes=minute),
-                0.2)
+    for minute in range((12 * 60) + 10):
+        create_surge_prediction(
+            liverpool,
+            BASE_TIME + datetime.timedelta(minutes=minute),
+            0.2)
 
 
-class TestStatusIndexView(TestCase, MakeSurgePredictionsMixin):
+def _setup_locations():
+    liverpool, _ = Location.objects.get_or_create(
+        slug='liverpool', name='Liverpool')
+    southampton, _ = Location.objects.get_or_create(
+        slug='southampton', name='Southampton')
+    return liverpool, southampton
+
+
+class TestStatusIndexView(TestCase):
     BASE_PATH = '/1/_status/'
 
-    def setUp(self):
-        self.liv = Location.objects.create(slug='liverpool', name='Liverpool')
-
     def _setup_all_ok(self):
+        liverpool, southampton = _setup_locations()
+
         create_tide_prediction(
-            self.liv,
+            liverpool,
             BASE_TIME + datetime.timedelta(days=31),
             5.0)
-        self._make_good_surge_predictions()
+        _make_good_surge_predictions()
         create_observation(
-            self.liv,
+            liverpool,
             BASE_TIME - datetime.timedelta(minutes=10),
             4.5,
             True)
+        southampton.delete()  # so that it doesn't come up as a failure
 
     def _setup_not_ok(self):
+        """
+        Create two locations but with no data - this will cause a failure.
+        """
+
+        liverpool, southampton = _setup_locations()
         TidePrediction.objects.all().delete()
         SurgePrediction.objects.all().delete()
         Observation.objects.all().delete()
@@ -71,11 +82,11 @@ class TestStatusIndexView(TestCase, MakeSurgePredictionsMixin):
 
 
 class TestCheckBase(TestCase):
-    fixtures = ['api/apps/locations/fixtures/two_locations.json']
-
     def setUp(self):
-        self.liverpool = Location.objects.get(slug='liverpool')
-        self.southampton = Location.objects.get(slug='southampton')
+        self.liverpool, self.southampton = _setup_locations()
+
+    def tearDown(self):
+        Location.objects.all().delete()
 
 
 class TestCheckTidePredictions(TestCheckBase):
@@ -154,10 +165,14 @@ class TestCheckObservations(TestCheckBase):
         assert_equal('> 1 hour old', text)
 
 
-class TestCheckSurgePredictions(TestCheckBase, MakeSurgePredictionsMixin):
-    def setUp(self):
-        super(TestCheckSurgePredictions, self).setUp()
-        self._make_good_surge_predictions()
+class TestCheckSurgePredictions(TestCheckBase):
+    @classmethod
+    def setUpClass(self):
+        _make_good_surge_predictions()
+
+    @classmethod
+    def tearDownClass(self):
+        Location.objects.all().delete()
 
     def test_that_surge_predictions_for_next_12_hours_every_minute_is_ok(self):
         with freeze_time(BASE_TIME):
