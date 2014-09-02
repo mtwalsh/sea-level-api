@@ -58,7 +58,7 @@ function ensure_running_in_travis_master_branch {
 }
 
 function ensure_only_tagging_on_production_python_version {
-  if [ "${TRAVIS_PYTHON_VERSION}" != "2.7" ]; then
+  if [ "${TRAVIS_PYTHON_VERSION}" != "3.4" ]; then
     echo "Not release tagging for Python version ${TRAVIS_PYTHON_VERSION}"
     exit 3
   fi
