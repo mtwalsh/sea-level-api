@@ -10,6 +10,8 @@ from api.apps.locations.models import Location
 from api.apps.predictions.models import TidePrediction, SurgePrediction
 from api.apps.observations.models import Observation
 
+from ..alert_manager import AlertType, is_alert_enabled
+
 
 LocationStatus = namedtuple('LocationStatus', 'name,checks')
 Check = namedtuple('Check', 'name,status_text,status_class')
@@ -62,6 +64,9 @@ def get_location_status(location):
 
 
 def check_tide_predictions(location):
+    if not is_alert_enabled(location, AlertType.tide_predictions):
+        return (True, 'OK (alert disabled)')
+
     one_month_away = (datetime.datetime.now(pytz.UTC)
                       + datetime.timedelta(days=30))
 
@@ -79,6 +84,9 @@ def check_surge_predictions(location):
     """
     Test that we have a surge prediction for every minute in the next 12 hours.
     """
+    if not is_alert_enabled(location, AlertType.surge_predictions):
+        return (True, 'OK (alert disabled)')
+
     now = datetime.datetime.now(pytz.UTC)
     twelve_hours_away = now + datetime.timedelta(hours=12)
 
@@ -96,6 +104,9 @@ def check_surge_predictions(location):
 
 
 def check_observations(location):
+    if not is_alert_enabled(location, AlertType.observations):
+        return (True, 'OK (alert disabled)')
+
     one_hour_ago = (datetime.datetime.now(pytz.UTC)
                     - datetime.timedelta(minutes=60))
 
