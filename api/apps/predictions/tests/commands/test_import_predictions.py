@@ -23,9 +23,9 @@ except ImportError:
 class TestImportTidePredictionsCommand(TestCase):
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
-    TEST_CSV = ('datetime,predicted_height\n'
-                '2014-06-01T00:00:00+00:00,8.55\n'
-                '2014-06-01T00:01:00+00:00,8.56\n')
+    TEST_CSV = ('datetime,predicted_tide_level\n'
+                '2014-06-01T00:00:00Z,8.55\n'
+                '2014-06-01T00:01:00Z,8.56\n')
 
     @classmethod
     def setUp(cls):
