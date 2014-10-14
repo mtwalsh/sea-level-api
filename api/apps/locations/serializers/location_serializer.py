@@ -8,5 +8,5 @@ class LocationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Location
         lookup_field = 'slug'
-        fields = ('name', 'url')
+        fields = ('name', 'slug', 'url')
         resource_name = 'locations'
