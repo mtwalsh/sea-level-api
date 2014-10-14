@@ -18,6 +18,7 @@ from api.apps.locations.models import Location
 from api.apps.status.views.status_index import (
     check_tide_predictions, check_observations, check_surge_predictions)
 
+from api.apps.status.alert_manager import AlertType, disable_alert_until
 
 BASE_TIME = datetime.datetime(2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 
@@ -102,17 +103,31 @@ class TestCheckTidePredictions(TestCheckBase):
         assert_equal(True, ok)
         assert_equal('OK', text)
 
-    def test_that_tide_predictions_less_than_one_month_not_ok(self):
+    def _make_bad_tide_location(self):
         create_tide_prediction(
             self.liverpool,
             BASE_TIME + datetime.timedelta(days=29),
             10.0)
+
+    def test_that_tide_predictions_less_than_one_month_not_ok(self):
+        self._make_bad_tide_location()
 
         with freeze_time(BASE_TIME):
             (ok, text) = check_tide_predictions(self.liverpool)
 
         assert_equal(False, ok)
         assert_equal('< 30 days left', text)
+
+    def test_that_tide_prediction_alerts_can_be_disabled(self):
+        self._make_bad_tide_location()
+
+        with freeze_time(BASE_TIME):
+            disable_alert_until(self.liverpool, AlertType.tide_predictions,
+                                BASE_TIME + datetime.timedelta(hours=1))
+            (ok, text) = check_tide_predictions(self.liverpool)
+
+        assert_equal(True, ok)
+        assert_equal('OK (alert disabled)', text)
 
     def test_that_predictions_for_liverpool_dont_affect_southampton(self):
         create_tide_prediction(
@@ -140,17 +155,31 @@ class TestCheckObservations(TestCheckBase):
         assert_equal(True, ok)
         assert_equal('OK', text)
 
-    def test_that_observations_over_one_hour_old_not_ok(self):
+    def _make_bad_observations(self):
         create_observation(
             self.liverpool,
             BASE_TIME - datetime.timedelta(minutes=61),
             10.0, True)
+
+    def test_that_observations_over_one_hour_old_not_ok(self):
+        self._make_bad_observations()
 
         with freeze_time(BASE_TIME):
             (ok, text) = check_observations(self.liverpool)
 
         assert_equal(False, ok)
         assert_equal('> 1 hour old', text)
+
+    def test_that_tide_prediction_alerts_can_be_disabled(self):
+        self._make_bad_observations()
+
+        with freeze_time(BASE_TIME):
+            disable_alert_until(self.liverpool, AlertType.observations,
+                                BASE_TIME + datetime.timedelta(hours=1))
+            (ok, text) = check_observations(self.liverpool)
+
+        assert_equal(True, ok)
+        assert_equal('OK (alert disabled)', text)
 
     def test_that_observations_from_liverpool_dont_affect_southampton(self):
         create_observation(
@@ -181,17 +210,30 @@ class TestCheckSurgePredictions(TestCheckBase):
         assert_equal('OK', text)
         assert_equal(True, ok)
 
-    def test_that_a_missing_surge_prediction_in_next_12_hours_not_ok(self):
+    def _make_bad_surge_location(self):
         prediction = SurgePrediction.objects.get(
             location=self.liverpool,
             minute__datetime=BASE_TIME + datetime.timedelta(minutes=10))
         prediction.delete()
 
+    def test_that_a_missing_surge_prediction_in_next_12_hours_not_ok(self):
+        self._make_bad_surge_location()
         with freeze_time(BASE_TIME):
             (ok, text) = check_surge_predictions(self.liverpool)
 
         assert_equal(False, ok)
         assert_equal('Missing data for next 12 hours: 719 vs 720', text)
+
+    def test_that_surge_prediction_alerts_can_be_disabled(self):
+        self._make_bad_surge_location()
+
+        with freeze_time(BASE_TIME):
+            disable_alert_until(self.liverpool, AlertType.surge_predictions,
+                                BASE_TIME + datetime.timedelta(hours=1))
+            (ok, text) = check_surge_predictions(self.liverpool)
+
+        assert_equal(True, ok)
+        assert_equal('OK (alert disabled)', text)
 
     def test_that_predictions_for_liverpool_dont_affect_southampton(self):
         with freeze_time(BASE_TIME):
