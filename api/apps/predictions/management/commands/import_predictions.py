@@ -5,6 +5,8 @@ import pytz
 
 from batcher import batcher
 
+from django.conf import settings
+
 from django_docopt_command import DocOptCommand
 from api.apps.predictions.models import TidePrediction
 from api.apps.locations.models import Location
@@ -94,5 +96,5 @@ def create_predictions(f, location_obj, minutes_hash):
 
 def parse_datetime(datetime_str):
     return datetime.datetime.strptime(
-        datetime_str, '%Y-%m-%dT%H:%M:%S+00:00').replace(
+        datetime_str, settings.DATETIME_FORMAT).replace(
         tzinfo=pytz.UTC)
