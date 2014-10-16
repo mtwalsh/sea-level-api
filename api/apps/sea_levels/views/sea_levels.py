@@ -19,7 +19,7 @@ class SeaLevels(ListAPIView):
 
     def get_queryset(self, query_params=None, *args, **kwargs):
         if query_params is None:
-            query_params = self.request.QUERY_PARAMS
+            query_params = self.request.query_params
 
         interval_mins = parse_interval(query_params.get('interval', '1'))
 

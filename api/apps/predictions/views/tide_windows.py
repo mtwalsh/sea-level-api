@@ -35,7 +35,7 @@ class TideWindows(ListAPIView):
 
     def get_queryset(self, query_params=None, *args, **kwargs):
         if query_params is None:
-            query_params = self.request.QUERY_PARAMS
+            query_params = self.request.query_params
 
         location = parse_location(self.kwargs.get('location_slug', None))
         time_range = parse_time_range(
@@ -44,7 +44,7 @@ class TideWindows(ListAPIView):
         )
 
         min_tide_level = parse_tide_level(
-            self.request.QUERY_PARAMS.get('tide_level'))
+            self.request.query_params.get('tide_level'))
 
         extended_time_range = TimeRange(
             start=time_range.start - ONE_DAY,
