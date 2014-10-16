@@ -1,5 +1,8 @@
+# TODO: install from PYPI once it's released there, eg:
+# djangorestframework==3.0.0
+https://github.com/tomchristie/django-rest-framework/archive/version-3.0.zip
+
 Django==1.7
-djangorestframework==2.4.3
 django-filter==0.7
 Markdown==2.4.1
 pytz==2014.7                                                                    
