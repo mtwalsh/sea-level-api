@@ -3,9 +3,9 @@ from rest_framework import serializers
 
 
 class TideWindowSerializer(serializers.Serializer):
-    start = serializers.SerializerMethodField('get_start')
-    end = serializers.SerializerMethodField('get_end')
-    duration = serializers.SerializerMethodField('get_duration')
+    start = serializers.SerializerMethodField()
+    end = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
 
     class Meta:
         resource_name = 'tide_windows'
