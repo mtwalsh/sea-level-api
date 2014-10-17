@@ -15,7 +15,8 @@ class Minute(models.Model):
 
     def save(self, *args, **kwargs):
         if self.datetime.tzinfo != pytz.UTC:
-            raise ValueError("datetime must have pytz.UTC timezone.")
+            raise ValueError("datetime must have pytz.UTC timezone: {}".format(
+                self.datetime))
         self.datetime = self.datetime.replace(second=0, microsecond=0)
         super(Minute, self).save(*args, **kwargs)
 
