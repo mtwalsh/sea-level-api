@@ -120,7 +120,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:00Z'
 SLUG_REGEX = '[a-z0-9-]+'
 
 # Static files (CSS, JavaScript, Images)
