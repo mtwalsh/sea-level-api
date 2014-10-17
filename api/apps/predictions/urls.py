@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, url
 from django.conf import settings
 
-from .views import TideLevels, TideLevelsNow, TideWindows, TideWindowsNow
+from .views import (
+    TideLevels, TideLevelsNow, TideWindows, TideWindowsNow, SurgeLevels)
 
 urlpatterns = patterns(
     '',
@@ -12,6 +13,10 @@ urlpatterns = patterns(
     url(r'^tide-levels/(?P<location_slug>' + settings.SLUG_REGEX + ')/$',
         TideLevels.as_view(),
         name='tide-levels'),
+
+    url(r'^surge-levels/(?P<location_slug>' + settings.SLUG_REGEX + ')/$',
+        SurgeLevels.as_view(),
+        name='surge-levels'),
 
     url(r'^tide-levels/(?P<location_slug>' + settings.SLUG_REGEX + ')/now/$',
         TideLevelsNow.as_view(),

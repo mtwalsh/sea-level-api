@@ -1,2 +1,3 @@
 from .tide_level_serializer import TideLevelSerializer
 from .tide_window_serializer import TideWindowSerializer
+from .surge_level_serializer import SurgeLevelSerializer
