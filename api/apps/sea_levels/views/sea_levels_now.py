@@ -12,7 +12,7 @@ class SeaLevelsNow(SeaLevels):
     """
 
     def get_queryset(self, *args, **kwargs):
-        new_query_params = self.request.QUERY_PARAMS.copy()  # make mutable
+        new_query_params = self.request.query_params.copy()  # make mutable
 
         now = now_rounded()
         now_plus_24 = now + datetime.timedelta(hours=24)

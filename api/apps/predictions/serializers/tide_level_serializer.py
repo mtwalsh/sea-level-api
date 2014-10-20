@@ -4,7 +4,7 @@ from ..models import TidePrediction
 
 
 class TideLevelSerializer(serializers.ModelSerializer):
-    datetime = serializers.SerializerMethodField('get_datetime')
+    datetime = serializers.SerializerMethodField()
 
     class Meta:
         model = TidePrediction
