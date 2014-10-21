@@ -1,5 +1,3 @@
-import pytz
-
 from rest_framework import serializers
 
 from ..models import SurgePrediction
@@ -35,15 +33,3 @@ class SurgeLevelSerializer(serializers.Serializer):
         instance = create_surge_prediction(**validated_data)
         logging.info(instance)
         return instance
-
-    def validate_datetime(self, dt):
-        try:
-            if dt.tzinfo != pytz.UTC:
-                raise serializers.ValidationError(
-                    'datetime must be UTC eg `2014-06-10 10:34:00Z`')
-        except AttributeError:
-            raise serializers.ValidationError(
-                'error accessing datetime.tzinfo on {} with type {}'.format(
-                    dt, type(dt)))
-
-        return dt
