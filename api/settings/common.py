@@ -135,6 +135,8 @@ REST_FRAMEWORK = {
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.HyperlinkedModelSerializer',
 
+    'DATETIME_INPUT_FORMATS': [DATETIME_FORMAT],
+
     # http://www.django-rest-framework.org/api-guide/authentication
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
