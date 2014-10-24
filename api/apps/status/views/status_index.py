@@ -82,25 +82,25 @@ def check_tide_predictions(location):
 
 def check_surge_predictions(location):
     """
-    Test that we have a surge prediction for every minute in the next 12 hours.
+    Test that we have a surge prediction for every minute in the next 37 hours.
     """
     if not is_alert_enabled(location, AlertType.surge_predictions):
         return (True, 'OK (alert disabled)')
 
     now = datetime.datetime.now(pytz.UTC)
-    twelve_hours_away = now + datetime.timedelta(hours=12)
+    thirty_seven_hours_away = now + datetime.timedelta(hours=37)
 
     count = SurgePrediction.objects.filter(
         location=location,
         minute__datetime__gte=now,
-        minute__datetime__lt=twelve_hours_away).count()
-    ok = (12 * 60) == count
+        minute__datetime__lt=thirty_seven_hours_away).count()
+    ok = (37 * 60) == count
 
     if ok:
         return (True, 'OK')
     else:
         return (False,
-                'Missing data for next 12 hours: {} vs 720'.format(count))
+                'Missing data for next 37 hours: {} vs 2220'.format(count))
 
 
 def check_observations(location):
