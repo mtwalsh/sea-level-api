@@ -202,6 +202,7 @@ class TestCheckSurgePredictions(TestCheckBase):
     @classmethod
     def tearDownClass(self):
         Location.objects.all().delete()
+        SurgePrediction.objects.all().delete()
 
     def test_that_surge_predictions_for_next_37_hours_every_minute_is_ok(self):
         with freeze_time(BASE_TIME):
