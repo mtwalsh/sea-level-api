@@ -48,6 +48,7 @@ class TestDoLoadPredictions(TestCase):
     def tearDownClass(cls):
         ModelLocation.objects.all().delete()
         Location.objects.all().delete()
+        SurgePrediction.objects.all().delete()
 
     def test_that_16_surge_predictions_have_been_created_for_liverpool(self):
         assert_equal(16, SurgePrediction.objects.filter(

@@ -88,6 +88,8 @@ class TestCheckBase(TestCase):
 
     def tearDown(self):
         Location.objects.all().delete()
+        TidePrediction.objects.all().delete()
+        SurgePrediction.objects.all().delete()
 
 
 class TestCheckTidePredictions(TestCheckBase):
