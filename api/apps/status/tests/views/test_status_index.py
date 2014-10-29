@@ -26,7 +26,7 @@ BASE_TIME = datetime.datetime(2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 def _make_good_surge_predictions():
     liverpool, _ = _setup_locations()
 
-    for minute in range((37 * 60) + 10):
+    for minute in range((36 * 60) + 10):
         create_surge_prediction(
             liverpool,
             BASE_TIME + datetime.timedelta(minutes=minute),
@@ -204,7 +204,7 @@ class TestCheckSurgePredictions(TestCheckBase):
         Location.objects.all().delete()
         SurgePrediction.objects.all().delete()
 
-    def test_that_surge_predictions_for_next_37_hours_every_minute_is_ok(self):
+    def test_that_surge_predictions_for_next_36_hours_every_minute_is_ok(self):
         with freeze_time(BASE_TIME):
             (ok, text) = check_surge_predictions(self.liverpool)
 
@@ -217,13 +217,13 @@ class TestCheckSurgePredictions(TestCheckBase):
             minute__datetime=BASE_TIME + datetime.timedelta(minutes=10))
         prediction.delete()
 
-    def test_that_a_missing_surge_prediction_in_next_37_hours_not_ok(self):
+    def test_that_a_missing_surge_prediction_in_next_36_hours_not_ok(self):
         self._make_bad_surge_location()
         with freeze_time(BASE_TIME):
             (ok, text) = check_surge_predictions(self.liverpool)
 
         assert_equal(False, ok)
-        assert_equal('Missing data for next 37 hours: 2219 vs 2220', text)
+        assert_equal('Missing data for next 36 hours: 2159 vs 2160', text)
 
     def test_that_surge_prediction_alerts_can_be_disabled(self):
         self._make_bad_surge_location()
