@@ -1,1 +1,0 @@
-from .model_location_admin import ModelLocationAdmin
