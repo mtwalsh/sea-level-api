@@ -20,5 +20,7 @@ urlpatterns = [
 
     url(r'^1/sea-levels/', include('api.apps.sea_levels.urls')),
 
+    url(r'^1/tide-gauges/', include('api.apps.tide_gauges.urls')),
+
     url(r'^1/_status/', include('api.apps.status.urls')),
 ]
