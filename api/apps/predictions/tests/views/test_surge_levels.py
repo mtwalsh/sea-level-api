@@ -3,33 +3,17 @@ import json
 from nose.tools import assert_equal
 
 from django.conf import settings
-from django.contrib.auth.models import Permission, User
 
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
 from api.apps.locations.models import Location
 from api.apps.predictions.models import SurgePrediction
-from api.libs.test_utils import decode_json
+from api.libs.test_utils import (decode_json, make_permitted_forbidden_users,
+                                 delete_users)
 
 _URL = '/1/predictions/surge-levels/liverpool/'
-
-
-def make_users():
-    permitted = User.objects.create_user('permitted', '', 'password')
-    Token.objects.create(user=permitted)
-
-    forbidden = User.objects.create_user('forbidden', '', 'password')
-    Token.objects.create(user=forbidden)
-    permitted.user_permissions.add(
-        Permission.objects.get(codename='add_surgeprediction'))
-
-    return permitted, forbidden
-
-
-def delete_users():
-    User.objects.get(username='permitted').delete()
-    User.objects.get(username='forbidden').delete()
+ADD_SURGE_PERMISSIONS = ['add_surgeprediction']
 
 
 class PostJsonMixin(object):
@@ -60,7 +44,7 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
             "datetime": "2014-06-10T11:00:00Z",
             "surge_level": 0.50
         }
-        (cls.user, _) = make_users()
+        (cls.user, _) = make_permitted_forbidden_users(ADD_SURGE_PERMISSIONS)
 
     @classmethod
     def tearDownClass(cls):
@@ -192,7 +176,8 @@ class TestSurgeLevelsEndpointAuthentication(APITestCase, PostJsonMixin):
     def setUpClass(cls):
         cls.liverpool = Location.objects.create(
             slug='liverpool', name='Liverpool')
-        (cls.permitted, cls.forbidden) = make_users()
+        (cls.permitted, cls.forbidden) = make_permitted_forbidden_users(
+            ADD_SURGE_PERMISSIONS)
         cls.good_data = {
             "datetime": "2014-06-10T10:34:00Z",
             "surge_level": 0.23
