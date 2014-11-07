@@ -65,6 +65,7 @@ INSTALLED_APPS = (
     'api.apps.sea_levels',
     'api.apps.status',
     'api.apps.surge_model_converter',
+    'api.apps.tide_gauges',
 
     'api.libs.minute_in_time',
 )
