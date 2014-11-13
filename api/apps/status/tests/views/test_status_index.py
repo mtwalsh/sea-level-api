@@ -145,10 +145,12 @@ class TestCheckTidePredictions(TestCheckBase):
 
 
 class TestCheckObservations(TestCheckBase):
+    OK_MINUTES = 120
+
     def test_that_observations_more_recent_than_one_hour_are_ok(self):
         create_observation(
             self.liverpool,
-            BASE_TIME - datetime.timedelta(minutes=59),
+            BASE_TIME - datetime.timedelta(minutes=self.OK_MINUTES - 1),
             10.0, True)
 
         with freeze_time(BASE_TIME):
@@ -160,19 +162,19 @@ class TestCheckObservations(TestCheckBase):
     def _make_bad_observations(self):
         create_observation(
             self.liverpool,
-            BASE_TIME - datetime.timedelta(minutes=61),
+            BASE_TIME - datetime.timedelta(minutes=self.OK_MINUTES + 1),
             10.0, True)
 
-    def test_that_observations_over_one_hour_old_not_ok(self):
+    def test_that_observations_over_two_hours_old_not_ok(self):
         self._make_bad_observations()
 
         with freeze_time(BASE_TIME):
             (ok, text) = check_observations(self.liverpool)
 
         assert_equal(False, ok)
-        assert_equal('> 1 hour old', text)
+        assert_equal('> 2 hours old', text)
 
-    def test_that_tide_prediction_alerts_can_be_disabled(self):
+    def test_that_observations_alerts_can_be_disabled(self):
         self._make_bad_observations()
 
         with freeze_time(BASE_TIME):
@@ -186,14 +188,14 @@ class TestCheckObservations(TestCheckBase):
     def test_that_observations_from_liverpool_dont_affect_southampton(self):
         create_observation(
             self.liverpool,
-            BASE_TIME - datetime.timedelta(minutes=59),
+            BASE_TIME - datetime.timedelta(minutes=self.OK_MINUTES - 1),
             10.0, True)
 
         with freeze_time(BASE_TIME):
             (ok, text) = check_observations(self.southampton)
 
         assert_equal(False, ok)
-        assert_equal('> 1 hour old', text)
+        assert_equal('> 2 hours old', text)
 
 
 class TestCheckSurgePredictions(TestCheckBase):
