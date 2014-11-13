@@ -108,7 +108,7 @@ def check_observations(location):
         return (True, 'OK (alert disabled)')
 
     one_hour_ago = (datetime.datetime.now(pytz.UTC)
-                    - datetime.timedelta(minutes=60))
+                    - datetime.timedelta(minutes=120))
 
     ok = Observation.objects.filter(
         location=location,
@@ -117,4 +117,4 @@ def check_observations(location):
     if ok:
         return (True, 'OK')
     else:
-        return (False, '> 1 hour old')
+        return (False, '> 2 hours old')
