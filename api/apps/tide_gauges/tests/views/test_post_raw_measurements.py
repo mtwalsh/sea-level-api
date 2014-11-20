@@ -10,7 +10,11 @@ from rest_framework.authtoken.models import Token
 from api.libs.test_utils import (decode_json, make_permitted_forbidden_users,
                                  delete_users)
 
-from api.apps.tide_gauges.models import RawMeasurement, TideGauge
+from api.apps.tide_gauges.models import (RawMeasurement, TideGauge,
+                                         TideGaugeLocationLink)
+from api.apps.observations.models import Observation
+from api.apps.locations.models import Location
+
 
 _URL = '/1/tide-gauges/raw-measurements/gladstone/'
 
@@ -46,12 +50,25 @@ class TestPutRawMeasurementsBase(APITestCase):
             **extras)
 
     @staticmethod
-    def _serialize(raw_measurement):
-        return {
-            'datetime': raw_measurement.datetime.strftime(
-                settings.DATETIME_FORMAT),
-            'height': raw_measurement.height
-        }
+    def _serialize(obj):
+        """
+        Serialize a RawMeasurement or Observation
+        """
+        if isinstance(obj, RawMeasurement):
+            return {
+                'datetime': obj.datetime.strftime(
+                    settings.DATETIME_FORMAT),
+                'height': obj.height
+            }
+        elif isinstance(obj, Observation):
+            return {
+                'datetime': obj.minute.datetime.strftime(
+                    settings.DATETIME_FORMAT),
+                'location': obj.location.slug,
+                'height': obj.sea_level
+            }
+        else:
+            raise TypeError("Can't serialize a {}".format(type(obj)))
 
 
 class TestPostRawMeasurements(TestPutRawMeasurementsBase):
@@ -179,6 +196,64 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
                              'formats instead: YYYY-MM-DDThh:mm:00Z']
             }],
             decode_json(response.content))
+
+
+class TestTideGaugeLocationLink(TestPutRawMeasurementsBase):
+    PREDICTION_A = {
+        "datetime": "2014-06-10T10:34:00Z",
+        "height": 0.23
+    }
+    PREDICTION_B = {
+        "datetime": "2014-06-10T10:34:00Z",
+        "height": 1.45
+    }
+
+    def setUp(self):
+        self._clean_up()
+        self.client.force_authenticate(self.permitted)
+
+        self.location_1 = Location.objects.create(slug='location_1')
+        self.location_2 = Location.objects.create(slug='location_2')
+
+        TideGaugeLocationLink.objects.create(
+            tide_gauge=TideGauge.objects.get(slug='gladstone'),
+            location=self.location_2)
+
+    def tearDown(self):
+        self._clean_up()
+
+    def _clean_up(self):
+        RawMeasurement.objects.all().delete()
+        Observation.objects.all().delete()
+        TideGaugeLocationLink.objects.all().delete()
+
+    def test_that_creating_raw_measurement_creates_linked_observation(self):
+        response = self._post_json([self.PREDICTION_A])
+        assert_equal(200, response.status_code)
+
+        all_observations = Observation.objects.all()
+        assert_equal(1, all_observations.count())
+
+        expected = self.PREDICTION_A
+        expected.update({'location': 'location_2'})
+
+        assert_equal(
+            expected,
+            self._serialize(all_observations[0]))
+
+    def test_that_linked_observation_gets_updated(self):
+        self._post_json([self.PREDICTION_A])
+        self._post_json([self.PREDICTION_B])  # update
+
+        all_observations = Observation.objects.all()
+        assert_equal(1, all_observations.count())
+
+        expected = self.PREDICTION_B
+        expected.update({'location': 'location_2'})
+
+        assert_equal(
+            expected,
+            self._serialize(all_observations[0]))
 
 
 class TestRawMeasurementsEndpointAuthentication(TestPutRawMeasurementsBase):
