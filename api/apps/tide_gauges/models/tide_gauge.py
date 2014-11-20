@@ -22,5 +22,15 @@ class TideGauge(models.Model):
 
     comment = models.CharField(max_length=100, blank=True)
 
+    @property
+    def linked_location(self):
+        from .tide_gauge_location_link import TideGaugeLocationLink
+        try:
+            link = self.tidegaugelocationlink
+        except TideGaugeLocationLink.DoesNotExist:
+            return None
+        else:
+            return link.location
+
     def __str__(self):
         return self.slug

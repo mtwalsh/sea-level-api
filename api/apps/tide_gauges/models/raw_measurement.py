@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 from .tide_gauge import TideGauge
+from api.apps.observations.utils import create_observation
 
 
 @python_2_unicode_compatible
@@ -17,6 +18,14 @@ class RawMeasurement(models.Model):
                   'the measurement is valid.')
     height = models.FloatField(
         help_text='The tide gauge measurement in metres.')
+
+    def save(self, *args, **kwargs):
+        linked_location = self.tide_gauge.linked_location
+        if linked_location is not None:
+            create_observation(
+                linked_location, self.datetime, self.height, False)
+
+        super(RawMeasurement, self).save(*args, **kwargs)
 
     def __str__(self):
         return '{}m'.format(self.height)
