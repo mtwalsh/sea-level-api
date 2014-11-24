@@ -11,6 +11,6 @@ function convert_ea_measurements_into_observations {
 pushd $(dirname $0)/..
 
 download_ea_measurements
-convert_ea_measurements_into_observations
+# convert_ea_measurements_into_observations
 
 popd
