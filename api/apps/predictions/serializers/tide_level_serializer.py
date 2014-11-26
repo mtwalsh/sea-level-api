@@ -9,7 +9,7 @@ class TideLevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = TidePrediction
         resource_name = 'tide_levels'
-        fields = ('tide_level', 'datetime')
+        fields = ('tide_level', 'datetime', 'is_high_tide')
 
     def get_datetime(self, obj):
         return obj.minute.datetime
