@@ -23,9 +23,9 @@ except ImportError:
 class TestImportTidePredictionsCommand(TestCase):
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
-    TEST_CSV = ('datetime,predicted_tide_level\n'
-                '2014-06-01T00:00:00Z,8.55\n'
-                '2014-06-01T00:01:00Z,8.56\n')
+    TEST_CSV = ('datetime,predicted_tide_level,is_high_tide\n'
+                '2014-06-01T00:00:00Z,8.55,\n'
+                '2014-06-01T00:01:00Z,8.56,1\n')
 
     @classmethod
     def setUp(cls):
@@ -37,7 +37,8 @@ class TestImportTidePredictionsCommand(TestCase):
         return {
             'location': prediction.location.slug,
             'minute__datetime': prediction.minute.datetime,
-            'tide_level': prediction.tide_level
+            'tide_level': prediction.tide_level,
+            'is_high_tide': prediction.is_high_tide,
         }
 
     def test_load_predictions(self):
@@ -47,13 +48,15 @@ class TestImportTidePredictionsCommand(TestCase):
                 'minute__datetime': datetime.datetime(2014, 6, 1, 0, 0,
                                                       tzinfo=pytz.UTC),
                 'location': 'liverpool',
-                'tide_level': 8.55
+                'tide_level': 8.55,
+                'is_high_tide': False,
             },
             {
                 'minute__datetime': datetime.datetime(2014, 6, 1, 0, 1,
                                                       tzinfo=pytz.UTC),
                 'location': 'liverpool',
-                'tide_level': 8.56
+                'tide_level': 8.56,
+                'is_high_tide': True,
             }
         ],
             [self._serialize(p) for p in TidePrediction.objects.all()]
@@ -61,14 +64,15 @@ class TestImportTidePredictionsCommand(TestCase):
 
     def test_load_predictions_can_update_existing_prediction(self):
         dt = datetime.datetime(2014, 6, 1, 0, 0, tzinfo=pytz.UTC)
-        create_tide_prediction(self.liverpool, dt, 8.0)
+        create_tide_prediction(self.liverpool, dt, 8.0)  # gets overwritten
         do_load_predictions(self.liverpool, self.csv_fobj)
         assert_equal(
             {
                 'minute__datetime': datetime.datetime(2014, 6, 1, 0, 0,
                                                       tzinfo=pytz.UTC),
                 'location': 'liverpool',
-                'tide_level': 8.55
+                'tide_level': 8.55,
+                'is_high_tide': False,
             },
             self._serialize(TidePrediction.objects.get(minute__datetime=dt)))
 

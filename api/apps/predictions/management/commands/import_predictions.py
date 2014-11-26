@@ -91,10 +91,23 @@ def create_predictions(f, location_obj, minutes_hash):
             b.push(TidePrediction(
                 location=location_obj,
                 minute=minutes_hash[parse_datetime(row['datetime'])],
-                tide_level=float(row['predicted_tide_level'])))
+                tide_level=float(row['predicted_tide_level']),
+                is_high_tide=parse_bool(row['is_high_tide'])))
 
 
 def parse_datetime(datetime_str):
     return datetime.datetime.strptime(
         datetime_str, settings.DATETIME_FORMAT).replace(
         tzinfo=pytz.UTC)
+
+
+def parse_bool(bool_string):
+    """
+    >>> parse_bool('1')
+    True
+    >>> parse_bool('0')
+    False
+    >>> parse_bool('')
+    False
+    """
+    return '1' == bool_string
