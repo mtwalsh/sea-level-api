@@ -45,6 +45,7 @@ class TestSeaLevelsView(TestSeaLevelsViewBase):
         expected = {
             'datetime': '2014-06-17T09:00:00Z',
             'predicted_tide_level': 10.3,
+            'predicted_is_high': False,
             'predicted_surge_level': None,
             'predicted_sea_level': None,
             'observed_sea_level': None,
