@@ -24,5 +24,9 @@ class TidePrediction(models.Model):
         help_text='The predicted height in metres of the tidal component '
                   'of the sea level above a known datum.')
 
+    is_high_tide = models.BooleanField(
+        default=False,
+        help_text='Does this tide prediction correspond to a high tide.')
+
     def __str__(self):
         return "{}".format(self.tide_level)

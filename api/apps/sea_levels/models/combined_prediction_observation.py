@@ -18,6 +18,7 @@ class CombinedPredictionObservation(models.Model):
         null=False,
         on_delete=models.DO_NOTHING)
     predicted_tide_level = models.FloatField(null=False)
+    predicted_is_high = models.BooleanField(null=False, default=False)
     predicted_surge_level = models.FloatField(null=False)
     predicted_sea_level = models.FloatField(null=False)
     observed_sea_level = models.FloatField(null=True)

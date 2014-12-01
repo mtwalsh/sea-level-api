@@ -41,7 +41,8 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
         tide_levels = data['tide_levels']
         expected = {
             'datetime': '2014-06-17T09:00:00Z',
-            'tide_level': 10.3
+            'tide_level': 10.3,
+            'is_high_tide': False,
         }
         assert_equal(expected, tide_levels[0])
 
