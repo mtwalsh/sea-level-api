@@ -23,7 +23,7 @@ except ImportError:
 class TestImportTidePredictionsCommand(TestCase):
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
 
-    TEST_CSV = ('datetime,predicted_tide_level,is_high_tide\n'
+    TEST_CSV = ('datetime,predicted_tide_level,predicted_is_high\n'
                 '2014-06-01T00:00:00Z,8.55,\n'
                 '2014-06-01T00:01:00Z,8.56,1\n')
 
