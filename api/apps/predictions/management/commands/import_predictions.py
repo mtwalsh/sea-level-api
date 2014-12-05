@@ -92,7 +92,7 @@ def create_predictions(f, location_obj, minutes_hash):
                 location=location_obj,
                 minute=minutes_hash[parse_datetime(row['datetime'])],
                 tide_level=float(row['predicted_tide_level']),
-                is_high_tide=parse_bool(row['is_high_tide'])))
+                is_high_tide=parse_bool(row['predicted_is_high'])))
 
 
 def parse_datetime(datetime_str):
