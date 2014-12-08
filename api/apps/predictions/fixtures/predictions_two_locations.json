@@ -42,7 +42,8 @@
     "fields": {
         "tide_level": 10.9,
         "location": 1,
-        "minute": 3
+        "minute": 3,
+        "is_high_tide": true
     },
     "model": "predictions.tideprediction",
     "pk": 3

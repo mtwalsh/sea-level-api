@@ -6,6 +6,7 @@ class TideWindowSerializer(serializers.Serializer):
     start = serializers.SerializerMethodField()
     end = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
+    high_tide = serializers.SerializerMethodField()
 
     class Meta:
         resource_name = 'tide_windows'
@@ -33,3 +34,6 @@ class TideWindowSerializer(serializers.Serializer):
         timediff = (obj.end_prediction.minute.datetime
                     - obj.start_prediction.minute.datetime)
         return {'total_seconds': timediff.total_seconds() + 60}
+
+    def get_high_tide(self, obj):
+        return self._serialize_prediction(obj.high_tide_prediction)

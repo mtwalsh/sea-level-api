@@ -15,10 +15,10 @@ from api.libs.json_envelope_renderer import replace_json_renderer
 from api.libs.param_parsers import (parse_location, parse_time_range,
                                     parse_tide_level)
 
-from ..models import TidePrediction
 from ..serializers import TideWindowSerializer
 
-from .helpers import (get_queryset, split_prediction_windows, TimeRange)
+from .helpers import (get_queryset, split_predictions_into_tide_windows,
+                      TimeRange)
 
 
 ONE_DAY = datetime.timedelta(hours=24)
@@ -53,53 +53,10 @@ class TideWindows(ListAPIView):
         predictions = get_queryset(location, extended_time_range).filter(
             tide_level__gte=min_tide_level)
 
+        tide_windows = split_predictions_into_tide_windows(predictions)
         return filter(None, map(
             partial(transform_time_window, time_range, extended_time_range),
-            make_tide_time_windows(predictions)))
-
-
-class TimeWindow(object):
-    def __init__(self, start_prediction, end_prediction):
-
-        self.start_prediction = start_prediction
-        self.end_prediction = end_prediction
-
-    def is_inside_time_range(self, time_range):
-        """
-        Return True if the self is fully or partially inside the given time
-        range
-                          start          end
-                            |             |
-                  <--F--> <--T--> <-T->  <--T-->  <--F-->
-
-        where first <------> last
-        """
-        return (self.start_prediction.minute.datetime <= time_range.end
-                and self.end_prediction.minute.datetime >= time_range.start)
-
-    def truncate_end(self, to_datetime):
-        self.end_prediction = TidePrediction.objects.get(
-            minute__datetime=to_datetime)
-
-    def truncate_start(self, to_datetime):
-        self.start_prediction = TidePrediction.objects.get(
-            minute__datetime=to_datetime)
-
-    def extends_after(self, when):
-        return (self.end_prediction.minute.datetime
-                >= when - datetime.timedelta(minutes=1))  # TODO ratty?
-
-    def extends_before(self, when):
-        return self.start_prediction.minute.datetime <= when
-
-
-def make_tide_time_windows(all_predictions_above_threshold):
-    for start, end in split_prediction_windows(
-            all_predictions_above_threshold):
-        yield TimeWindow(
-            start_prediction=start,
-            end_prediction=end
-        )
+            tide_windows))
 
 
 def transform_time_window(time_range, extended_time_range, window):
@@ -112,4 +69,5 @@ def transform_time_window(time_range, extended_time_range, window):
     if window.extends_before(extended_time_range.start):
         window.truncate_start(time_range.start)
 
-    return window
+    if window.validate():
+        return window
