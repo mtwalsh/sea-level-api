@@ -1,12 +1,6 @@
-import datetime
-
-import pytz
-
 from nose.tools import assert_equal
 from freezegun import freeze_time
 
-from api.apps.predictions.utils import create_tide_prediction
-from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
 
 from .test_tide_windows import TestTideWindowsViewBase
@@ -16,9 +10,6 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
     """
     Test that the `/now/` endpoint searches from now until now + 24 hours.
     """
-    fixtures = [
-        'api/apps/locations/fixtures/two_locations.json',
-    ]
 
     @classmethod
     def setUp(cls):
@@ -26,38 +17,29 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
 
     @classmethod
     def create_two_days_of_tide(cls):
-        location = Location.objects.get(slug='liverpool')
-
-        cls.base_time = datetime.datetime(2014, 6, 1, 10, 00, tzinfo=pytz.UTC)
-
         day = 86400
 
-        for minute, level in [
+        cls.create_predictions([
             (-5, 4.0),
             (-4, 4.51),
             (-3, 5.00),
-            (-2, 5.10),
-            (-1, 4.60),
+            (-2, 5.10, True),
+            (-1, 3.0),
 
             (0, 4.50),
             (1, 4.75),
             (2, 5.00),
-            (3, 5.10),
+            (3, 5.10, True),
             (4, 4.60),
             (5, 4.55),
 
             (day + 0, 4.50),
             (day + 1, 4.75),
             (day + 2, 5.00),
-            (day + 3, 5.10),
+            (day + 3, 5.10, True),
             (day + 4, 4.60),
             (day + 5, 4.55),
-        ]:
-            create_tide_prediction(
-                location=location,
-                datetime=cls.base_time + datetime.timedelta(minutes=minute),
-                tide_level=level
-            )
+        ])
 
     def test_that_now_endpoint_returns_http_200_ok(self):
         response = self.client.get(
@@ -72,18 +54,9 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
         data = decode_json(response.content)
         assert_equal(1, len(data['tide_windows']))
         assert_equal(
-            {
-                'start': {
-                    'datetime': '2014-06-01T09:56:00Z',
-                    'tide_level': 4.51,
-                },
-                'end': {
-                    'datetime': '2014-06-01T10:05:00Z',
-                    'tide_level': 4.55,
-                },
-                'duration': {
-                    'total_seconds': 600,
-                }
-            },
-            data['tide_windows'][0]
+            ('2014-06-01T10:00:00Z', 4.50,
+             '2014-06-01T10:05:00Z', 4.55,
+             '2014-06-01T10:03:00Z', 5.1,
+             360),
+            self.parse_window(data['tide_windows'][0])
         )
