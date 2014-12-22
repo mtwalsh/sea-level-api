@@ -24,5 +24,11 @@ class Location(models.Model):
 
     name = models.CharField(max_length=100, blank=False, default="")
 
+    visible = models.BooleanField(
+        default=True,
+        help_text='Whether the location should be listed in the locations '
+                  'endpoint. Note that invisible locations can still be '
+                  'accessed through other endpoints if their slug is known.')
+
     def __str__(self):
         return self.name
