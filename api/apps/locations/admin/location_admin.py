@@ -4,4 +4,4 @@ from api.apps.locations.models import Location
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('slug', 'name', 'visible')
