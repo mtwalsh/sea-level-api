@@ -50,3 +50,15 @@ class TestLocationList(TestCase):
                 'url': 'http://testserver/1/locations/southampton/'
             }]
         assert_equal(expected, decode_json(self.response.content)['locations'])
+
+    def test_that_non_visible_locations_arent_listed(self):
+        hidden_location = Location.objects.create(
+            slug='hidden', name='Hidden', visible=False)
+        self.response = self.client.get(self.PATH)
+
+        endpoint_slugs = set([l['slug'] for l in decode_json(
+            self.response.content)['locations']])
+
+        assert_equal(set(['southampton', 'liverpool']), endpoint_slugs)
+
+        hidden_location.delete()
