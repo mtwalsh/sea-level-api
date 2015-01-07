@@ -2,17 +2,17 @@
 # djangorestframework==3.0.0
 -e git+https://github.com/tomchristie/django-rest-framework.git@4e001dbb7ac0bc13d6d5fbb4524e905184610aa2#egg=rest_framework
 
-Django==1.7.1
+Django==1.7.2
 django-filter==0.9.1
 Markdown==2.5.2
 pytz==2014.10                                                                    
 psycopg2==2.5.4
 python-batcher==0.0.2
 django-docopt-command==0.2.0
-django-cors-headers==0.13
+django-cors-headers==1.0.0
 lxml==3.4.1
 backoff==1.0.4
-requests==2.5.0
+requests==2.5.1
 django-debug-toolbar==1.2.2
 sqlparse==0.1.14
 enum34==1.0.4
